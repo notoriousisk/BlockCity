@@ -3,39 +3,40 @@
     <div class="game-container">
       <div class="game-header">
         <div class="score">Score: {{ score }}</div>
+        <div class="moves">Moves left: {{ movesLeft }}</div>
       </div>
-      <GameBoard ref="gameBoard" @match="handleMatch" />
+      <div class="game-board">
+        <Match3Game
+          :columns="8"
+          :rows="8"
+          :tileSize="40"
+          @update:score="updateScore"
+          @reset:score="resetScore"
+        />
+      </div>
       <div class="game-controls">
-        <button class="control-button" @click="resetGame">Reset Board</button>
-        <button class="control-button" @click="restartGame">
-          Restart Game
-        </button>
+        <button class="control-button">Restart Game</button>
       </div>
     </div>
   </AppPage>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import GameBoard from "../components/game/GameBoard.vue";
 import AppPage from "@/components/AppPage.vue";
+import Match3Game from "@/components/Match3Game.vue";
+import { useGameStore } from "@/stores/gameStore";
+import { computed, ref } from "vue";
 
+const gameStore = useGameStore();
 const score = ref(0);
-const gameBoard = ref<InstanceType<typeof GameBoard> | null>(null);
+const movesLeft = computed(() => gameStore.movesLeft);
 
-const handleMatch = (points: number) => {
-  score.value += points;
+const updateScore = (scoreToAdd: number) => {
+  score.value += scoreToAdd;
 };
 
-const resetGame = () => {
-  if (gameBoard.value) {
-    gameBoard.value.initializeBoard();
-  }
-};
-
-const restartGame = () => {
+const resetScore = () => {
   score.value = 0;
-  resetGame();
 };
 </script>
 
@@ -52,12 +53,21 @@ const restartGame = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 12px;
   padding: 12px;
   background-color: var(--tg-theme-bg-color);
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
   color: var(--tg-theme-text-color);
+}
+
+.game-board {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
 }
 
 .game-controls {
@@ -77,13 +87,5 @@ const restartGame = () => {
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
-}
-
-.control-button:hover {
-  opacity: 0.9;
-}
-
-.control-button:active {
-  opacity: 0.8;
 }
 </style>

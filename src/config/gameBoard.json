@@ -1,12 +1,23 @@
 {
-  "board": [
-    ["purple", "yellow", "purple", "yellow", "purple", "red", "blue", "green"],
-    ["blue", "purple", "red", "purple", "red", "blue", "green", "yellow"],
-    ["green", "blue", "purple", "red", "red", "green", "red", "purple"],
-    ["yellow", "red", "red", "blue", "green", "red", "purple", "red"],
-    ["purple", "red", "blue", "green", "yellow", "purple", "red", "blue"],
-    ["red", "blue", "green", "yellow", "purple", "red", "blue", "green"],
-    ["blue", "green", "yellow", "purple", "red", "blue", "green", "yellow"],
-    ["green", "yellow", "purple", "red", "blue", "green", "yellow", "purple"]
+  "levels": [
+    {
+      "id": 4,
+      "columns": 8,
+      "rows": 8,
+      "minMatchLength": 3,
+      "scoreMultiplier": 100,
+      "movesLimit": 30,
+      "colorsLimit": 7,
+      "grid": [
+        [0, 4, 2, 3, 4, 2, 3, 1],
+        [4, 2, 3, 1, 2, 3, 1, 4],
+        [2, 4, 1, 4, 0, 1, 4, 2],
+        [3, 1, 4, 2, 1, 4, 2, 3],
+        [1, 4, 2, 3, 4, 4, 0, 1],
+        [4, 6, 6, 1, 2, 5, 4, 4],
+        [2, 3, 1, 4, 4, 5, 4, 2],
+        [3, 1, 4, 5, 1, 4, 2, 0]
+      ]
+    }
   ]
 }
