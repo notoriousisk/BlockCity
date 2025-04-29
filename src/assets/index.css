@@ -1,25 +1,52 @@
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.5;
+:root {
+  /* Primary Colors */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #1e40af;
+  --color-primary-light: #93c5fd;
 
-    background: var(--tg-theme-secondary-bg-color, white);
-    color: var(--tg-theme-text-color, black);
+  /* Accent Colors */
+  --color-accent: #fbbf24;
+  --color-accent-light: #fef3c7;
+
+  /* Neutral Colors */
+  --color-background: #f9fafb;
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Text Colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-light: #d1d5db;
+  --color-light: #ebeef2;
+
+  /* UI States */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #dc2626;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+
+  background-color: #505050;
+  margin: 0;
+  padding: 0;
 }
 
 blockquote {
-    margin: 0;
+  margin: 0;
 }
 
 blockquote p {
-    padding: 15px;
-    background: #eee;
-    border-radius: 5px;
+  background: #eee;
+  border-radius: 5px;
 }
 
 pre {
-    overflow: auto;
+  overflow: auto;
 }

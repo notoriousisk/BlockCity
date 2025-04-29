@@ -1,0 +1,12 @@
+{
+  "board": [
+    ["purple", "yellow", "purple", "yellow", "purple", "red", "blue", "green"],
+    ["blue", "purple", "red", "purple", "red", "blue", "green", "yellow"],
+    ["green", "blue", "purple", "red", "red", "green", "red", "purple"],
+    ["yellow", "red", "red", "blue", "green", "red", "purple", "red"],
+    ["purple", "red", "blue", "green", "yellow", "purple", "red", "blue"],
+    ["red", "blue", "green", "yellow", "purple", "red", "blue", "green"],
+    ["blue", "green", "yellow", "purple", "red", "blue", "green", "yellow"],
+    ["green", "yellow", "purple", "red", "blue", "green", "yellow", "purple"]
+  ]
+}

@@ -1,50 +1,50 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import IndexPage from '@/pages/IndexPage.vue';
-import InitDataPage from '@/pages/InitDataPage.vue';
-import ThemeParamsPage from '@/pages/ThemeParamsPage.vue';
-import LaunchParamsPage from '@/pages/LaunchParamsPage.vue';
-import TonConnectPage from '@/pages/TonConnectPage.vue';
-import IconTonConnect from '@/components/IconTonConnect.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import IndexPage from "@/pages/IndexPage.vue";
+import InitDataPage from "@/pages/InitDataPage.vue";
+import ThemeParamsPage from "@/pages/ThemeParamsPage.vue";
+import GamePage from "@/pages/GamePage.vue";
+import TonConnectPage from "@/pages/TonConnectPage.vue";
+import IconTonConnect from "@/components/IconTonConnect.vue";
 
 export const routes = [
   {
-    path: '/',
-    name: 'index',
+    path: "/",
+    name: "home",
     component: IndexPage,
   },
   {
-    path: '/init-data',
-    name: 'init-data',
+    path: "/init-data",
+    name: "user",
     component: InitDataPage,
     meta: {
-      title: 'Init Data',
+      title: "Init Data",
     },
   },
   {
-    path: '/theme-params',
-    name: 'theme-params',
+    path: "/theme-params",
+    name: "shop",
     component: ThemeParamsPage,
     meta: {
-      title: 'Theme Params',
+      title: "Theme Params",
     },
   },
   {
-    path: '/launch-params',
-    name: 'launch-params',
-    component: LaunchParamsPage,
+    path: "/game",
+    name: "game",
+    component: GamePage,
     meta: {
-      title: 'Launch Params',
+      title: "Game Page",
     },
   },
   {
-    path: '/ton-connect',
-    name: 'ton-connect',
+    path: "/ton-connect",
+    name: "ton-connect",
     component: TonConnectPage,
     meta: {
       icon: IconTonConnect,
-      title: 'TON Connect',
+      title: "TON Connect",
     },
-  }
+  },
 ];
 
 const router = createRouter({

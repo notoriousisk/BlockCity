@@ -49,7 +49,6 @@ function mapValueToString(value?: boolean | string) {
 .display-data__line {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
     gap: 10px;
     flex-flow: wrap;
 }
@@ -58,7 +57,6 @@ function mapValueToString(value?: boolean | string) {
     border: 1px solid var(--tg-theme-accent-text-color);
     background-color: var(--tg-theme-bg-color);
     border-radius: 5px;
-    padding: 2px 8px 4px;
     box-sizing: border-box;
 }
 

@@ -1,22 +1,34 @@
 <script setup lang="ts">
-defineProps<{ title: string, disclaimer?: string }>()
+import NavBar from "@/components/navbar/NavBar.vue";
+
+defineProps<{ title: string; disclaimer?: string }>();
 </script>
 
 <template>
-    <div class="page">
-        <h1>{{ title }}</h1>
-        <div v-if="disclaimer" class="page__disclaimer">{{ disclaimer }}</div>
-        <slot />
+  <div class="page">
+    <div class="content">
+      <slot />
     </div>
+    <NavBar />
+  </div>
 </template>
 
-<style>
+<style scoped>
 .page {
-    padding: 0 10px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--color-background);
+  height: 100dvh;
+  max-width: 700px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
 }
 
-.page__disclaimer {
-    margin-bottom: 16px;
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
 }
 </style>

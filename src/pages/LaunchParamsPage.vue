@@ -13,8 +13,8 @@ const rows: DisplayDataRow[] = [
     { title: 'tgWebAppVersion', value: lp.version },
     { title: 'tgWebAppBotInline', value: lp.botInline },
     { title: 'tgWebAppStartParam', value: lp.startParam },
-    { title: 'tgWebAppData', value: { render: () => h(AppLink, { to: { name: 'init-data' } }, { default: () => 'View' }) } },
-    { title: 'tgWebAppThemeParams', value: { render: () => h(AppLink, { to: { name: 'theme-params' } }, { default: () => 'View' }) } },
+    { title: 'tgWebAppData', value: { render: () => h(AppLink, { to: { name: 'user' } }, { default: () => 'View' }) } },
+    { title: 'tgWebAppThemeParams', value: { render: () => h(AppLink, { to: { name: 'shop' } }, { default: () => 'View' }) } },
 ];
 </script>
 

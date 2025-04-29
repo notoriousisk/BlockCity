@@ -58,7 +58,6 @@ const rows = computed<DisplayDataRow[]>(() => {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 16px;
 }
 
 .ton-connect-page__provider-image {
