@@ -3,6 +3,7 @@
     <div class="game-container">
       <div class="game-header">
         <div class="score">Score: {{ score }}</div>
+        <div class="required-score">Target: {{ requiredScore }}</div>
         <div class="moves">Moves left: {{ movesLeft }}</div>
       </div>
       <div class="game-board">
@@ -26,10 +27,12 @@ import AppPage from "@/components/AppPage.vue";
 import Match3Game from "@/components/Match3Game.vue";
 import { useGameStore } from "@/stores/gameStore";
 import { computed, ref } from "vue";
+import gameConfig from "@/config/gameBoard.json";
 
 const gameStore = useGameStore();
 const score = ref(0);
 const movesLeft = computed(() => gameStore.movesLeft);
+const requiredScore = computed(() => gameConfig.levels[0].requiredScore);
 
 const updateScore = (scoreToAdd: number) => {
   score.value += scoreToAdd;
@@ -51,7 +54,7 @@ const resetScore = () => {
 
 .game-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
   padding: 12px;
@@ -60,6 +63,10 @@ const resetScore = () => {
   font-size: 1rem;
   font-weight: 500;
   color: var(--tg-theme-text-color);
+}
+
+.required-score {
+  color: var(--tg-theme-hint-color);
 }
 
 .game-board {

@@ -1,3 +1,39 @@
+<template>
+  <AppPage title="Init Data">
+    <template #disclaimer>
+      This page displays application
+      <AppLink to="https://docs.telegram-mini-apps.com/platform/init-data"
+        >init data</AppLink
+      >.
+    </template>
+    <i v-if="!initDataRows">Application was launched with missing init data</i>
+    <template v-else>
+      <div class="init-data-page__section">
+        <h2 class="init-data-page__section-title">Init data</h2>
+        <AppDisplayData :rows="initDataRows" />
+      </div>
+
+      <div class="init-data-page__section">
+        <h2 class="init-data-page__section-title">User</h2>
+        <i v-if="!userRows">User information missing</i>
+        <AppDisplayData v-else :rows="userRows" />
+      </div>
+
+      <div class="init-data-page__section">
+        <h2 class="init-data-page__section-title">Receiver</h2>
+        <i v-if="!receiverRows">Receiver information missing</i>
+        <AppDisplayData v-else :rows="receiverRows" />
+      </div>
+
+      <div class="init-data-page__section">
+        <h2 class="init-data-page__section-title">Chat</h2>
+        <i v-if="!chatRows">Chat information missing</i>
+        <AppDisplayData v-else :rows="chatRows" />
+      </div>
+    </template>
+  </AppPage>
+</template>
+
 <script setup lang="ts">
 import { computed } from "vue";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
@@ -81,42 +117,6 @@ function getUserRows(user: User): DisplayDataRow[] {
   ];
 }
 </script>
-
-<template>
-  <AppPage title="Init Data">
-    <template #disclaimer>
-      This page displays application
-      <AppLink to="https://docs.telegram-mini-apps.com/platform/init-data"
-        >init data</AppLink
-      >.
-    </template>
-    <i v-if="!initDataRows">Application was launched with missing init data</i>
-    <template v-else>
-      <div class="init-data-page__section">
-        <h2 class="init-data-page__section-title">Init data</h2>
-        <AppDisplayData :rows="initDataRows" />
-      </div>
-
-      <div class="init-data-page__section">
-        <h2 class="init-data-page__section-title">User</h2>
-        <i v-if="!userRows">User information missing</i>
-        <AppDisplayData v-else :rows="userRows" />
-      </div>
-
-      <div class="init-data-page__section">
-        <h2 class="init-data-page__section-title">Receiver</h2>
-        <i v-if="!receiverRows">Receiver information missing</i>
-        <AppDisplayData v-else :rows="receiverRows" />
-      </div>
-
-      <div class="init-data-page__section">
-        <h2 class="init-data-page__section-title">Chat</h2>
-        <i v-if="!chatRows">Chat information missing</i>
-        <AppDisplayData v-else :rows="chatRows" />
-      </div>
-    </template>
-  </AppPage>
-</template>
 
 <style scoped>
 .init-data-page__section + .init-data-page__section {

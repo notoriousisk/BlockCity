@@ -6,25 +6,43 @@
         :width="canvasWidth"
         :height="canvasHeight"
       ></canvas>
+      <div v-if="gameOver" class="game-board-overlay"></div>
     </div>
 
     <div class="game-controls">
       <button class="control-button" @click="handleNewGame">New Game</button>
-      <button class="control-button" @click="toggleShowMoves">
+      <button
+        class="control-button"
+        @click="toggleShowMoves"
+        :disabled="gameOver"
+      >
         {{ showMoves ? "Hide" : "Show" }} Moves
       </button>
-      <button class="control-button" @click="toggleAiBot">
+      <button class="control-button" @click="toggleAiBot" :disabled="gameOver">
         {{ aiBot ? "Disable" : "Enable" }} AI Bot
       </button>
     </div>
 
-    <div v-if="gameOver" class="game-over">Game Over!</div>
+    <div v-if="isReshuffling" class="game-message reshuffling">
+      Reshuffling...
+    </div>
+    <div v-if="gameOver" class="game-message game-over">
+      {{ gameResult === "success" ? "Level Complete!" : "Game Over!" }}
+      <div class="game-message-details">
+        {{
+          gameResult === "success"
+            ? "You reached the target score!"
+            : "No moves left!"
+        }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import gameConfig from "@/config/gameBoard.json";
+import { useGameStore } from "@/stores/gameStore";
 
 const TILE_SIZE = 40; // Constant tile size in pixels
 
@@ -68,13 +86,13 @@ const emit = defineEmits<{
 
 const currentLevel = ref(gameConfig.levels[0]);
 const tileColors: string[] = [
-  "#c0392b", // 0
-  "#c0392b", // 1
-  "#2980b9", // 2
-  "#1abc9c", // 3
-  "#f1c40f", // 4
-  "#e67e22", // 5
-  "#e6b0aa", // 6
+  "#ea554e",
+  "#a34eea",
+  "#4E95EA",
+  "#5BD3AA",
+  "#e3ea4e",
+  "#eaa34e",
+  "#e6b0aa",
 ];
 
 const gameCanvas = ref<HTMLCanvasElement | null>(null);
@@ -105,9 +123,14 @@ const animationTimeTotal = 0.3;
 const showMoves = ref(false);
 const aiBot = ref(false);
 const gameOver = ref(false);
+const isReshuffling = ref(false);
+const gameResult = ref<"success" | "failure" | null>(null);
 
 const gameStates = { init: 0, ready: 1, resolve: 2 };
 let gameState = gameStates.init;
+
+// Add after other refs
+const gameStore = useGameStore();
 
 // Initialize the game
 const init = () => {
@@ -168,6 +191,14 @@ const handleClusterResolution = () => {
       scoreToAdd += currentLevel.value.scoreMultiplier * (cluster.length - 2);
     }
     emit("update:score", scoreToAdd);
+
+    // Check if required score is reached
+    if (gameStore.score >= currentLevel.value.requiredScore) {
+      gameOver.value = true;
+      gameResult.value = "success";
+      return;
+    }
+
     removeClusters();
     animationState = 1;
   } else {
@@ -223,11 +254,71 @@ const handleRewindSwap = () => {
   gameState = gameStates.ready;
 };
 
+// Reshuffle board while maintaining tile color distribution
+const reshuffleBoard = () => {
+  console.log("Starting board reshuffle...");
+
+  // Collect all tile types
+  const allTiles: number[] = [];
+  for (let i = 0; i < level.columns; i++) {
+    for (let j = 0; j < level.rows; j++) {
+      if (level.tiles[i][j].type !== -1) {
+        allTiles.push(level.tiles[i][j].type);
+      }
+    }
+  }
+
+  console.log("Current tile distribution:", allTiles);
+
+  // Shuffle the array
+  for (let i = allTiles.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allTiles[i], allTiles[j]] = [allTiles[j], allTiles[i]];
+  }
+
+  console.log("Shuffled tile distribution:", allTiles);
+
+  // Redistribute tiles
+  let tileIndex = 0;
+  for (let i = 0; i < level.columns; i++) {
+    for (let j = 0; j < level.rows; j++) {
+      if (level.tiles[i][j].type !== -1) {
+        level.tiles[i][j].type = allTiles[tileIndex++];
+      }
+    }
+  }
+
+  console.log("Board reshuffled successfully");
+};
+
 // Update game state
 const update = (dt: number) => {
   if (gameState === gameStates.ready) {
     if (moves.length <= 0) {
-      gameOver.value = true;
+      console.log("No moves available, initiating reshuffle...");
+      isReshuffling.value = true;
+      // Reshuffle the board if no moves are available
+      reshuffleBoard();
+      findMoves();
+      // If still no moves after reshuffle, reshuffle again
+      let reshuffleCount = 1;
+      while (moves.length <= 0) {
+        console.log(
+          `No moves after reshuffle #${reshuffleCount}, reshuffling again...`
+        );
+        reshuffleBoard();
+        findMoves();
+        reshuffleCount++;
+      }
+      console.log(
+        `Board successfully reshuffled after ${reshuffleCount} attempts`
+      );
+
+      // Hide the reshuffling message after 1 second
+      setTimeout(() => {
+        isReshuffling.value = false;
+      }, 1000);
+
       return;
     }
     if (aiBot.value) {
@@ -471,6 +562,8 @@ const newGame = () => {
   emit("reset:score");
   gameState = gameStates.ready;
   gameOver.value = false;
+  gameResult.value = null;
+  gameStore.movesLeft = currentLevel.value.movesLimit;
   createLevel();
   findMoves();
   findClusters();
@@ -676,6 +769,15 @@ const mouseSwap = (c1: number, r1: number, c2: number, r2: number) => {
   animationState = 2;
   animationTime = 0;
   gameState = gameStates.resolve;
+
+  // Decrease moves left
+  gameStore.movesLeft--;
+
+  // Check if out of moves
+  if (gameStore.movesLeft <= 0) {
+    gameOver.value = true;
+    gameResult.value = "failure";
+  }
 };
 
 // Update button handlers
@@ -697,7 +799,7 @@ const toggleAiBot = () => {
 
 // Mouse event handlers
 const onMouseMove = (e: MouseEvent) => {
-  if (!gameCanvas.value) return;
+  if (!gameCanvas.value || drag || gameOver.value) return;
   const rect = gameCanvas.value.getBoundingClientRect();
   const pos = {
     x: e.clientX - rect.left,
@@ -742,7 +844,7 @@ const handleTileSelection = (mt: { valid: boolean; x: number; y: number }) => {
 };
 
 const onMouseDown = (e: MouseEvent) => {
-  if (!gameCanvas.value || drag) return;
+  if (!gameCanvas.value || drag || gameOver.value) return;
 
   const rect = gameCanvas.value.getBoundingClientRect();
   const pos = {
@@ -838,5 +940,67 @@ canvas {
   font-size: 24px;
   font-weight: bold;
   text-align: center;
+}
+
+.game-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  z-index: 1000;
+}
+
+.reshuffling {
+  background-color: rgba(0, 0, 0, 0.8);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.game-message-details {
+  font-size: 16px;
+  margin-top: 8px;
+  opacity: 0.8;
+}
+
+.game-over {
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 24px;
+}
+
+.game-board-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-button:disabled:hover {
+  opacity: 0.5;
 }
 </style>
