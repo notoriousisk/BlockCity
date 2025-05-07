@@ -4,6 +4,9 @@ import AppLink from "@/components/AppLink.vue";
 import CityIcon from "@/assets/city.svg";
 import LogoIcon from "@/assets/logo.svg";
 import { BadgeDollarSign, Zap } from "lucide-vue-next";
+import { useUserStore } from "@/stores/userStore";
+
+const userStore = useUserStore();
 </script>
 
 <template>
@@ -17,12 +20,12 @@ import { BadgeDollarSign, Zap } from "lucide-vue-next";
         <span class="money-badge">
           <BadgeDollarSign class="money-icon" />
           <span class="money-colon">:</span>
-          <span class="money-amount">{{ "1111110" + "$"}}</span>
+          <span class="money-amount">{{ userStore.balance }}$</span>
         </span>
         <span class="energy-badge">
           <Zap class="energy-icon" />
           <span class="energy-colon">:</span>
-          <span class="energy-amount">10 </span>
+          <span class="energy-amount">{{ userStore.energy }}</span>
         </span>
       </div>
       <AppLink class="game-button" :to="{ name: 'game' }">Play</AppLink>

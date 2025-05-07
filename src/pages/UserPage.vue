@@ -62,6 +62,13 @@
           </div>
           <span class="asset-amount">{{ userStore.assets.moves }}</span>
         </div>
+        <div class="asset-item">
+          <div class="asset-header">
+            <Bot class="asset-icon" />
+            <span class="asset-name">AI Assistant for 60 sec</span>
+          </div>
+          <span class="asset-amount">{{ userStore.assets.aiAssistant }}</span>
+        </div>
       </div>
 
       <!-- Referral Block -->
@@ -120,6 +127,7 @@ import {
   BringToFront,
   User,
   Star,
+  Bot,
 } from "lucide-vue-next";
 import { ref, computed } from "vue";
 

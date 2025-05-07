@@ -9,6 +9,7 @@ export const useUserStore = defineStore("user", () => {
   const energy = ref(100); // Default energy value
   const assets = ref({
     moves: 0,
+    aiAssistant: 0,
   });
   const initDataRef = useSignal(initData.state);
 
@@ -52,7 +53,7 @@ export const useUserStore = defineStore("user", () => {
     energy.value = Math.max(0, Math.min(100, newEnergy)); // Clamp between 0 and 100
   };
 
-  const updateAssets = (newAssets: { moves: number }) => {
+  const updateAssets = (newAssets: { moves: number; aiAssistant: number }) => {
     assets.value = newAssets;
   };
 

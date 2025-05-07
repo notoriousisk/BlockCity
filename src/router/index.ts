@@ -5,6 +5,7 @@ import ThemeParamsPage from "@/pages/ThemeParamsPage.vue";
 import GamePage from "@/pages/GamePage.vue";
 import TonConnectPage from "@/pages/TonConnectPage.vue";
 import IconTonConnect from "@/components/IconTonConnect.vue";
+import GameLevel from "@/pages/GameLevel.vue";
 
 export const routes = [
   {
@@ -43,6 +44,14 @@ export const routes = [
     meta: {
       icon: IconTonConnect,
       title: "TON Connect",
+    },
+  },
+  {
+    path: "/game-level",
+    name: "GameLevel",
+    component: GameLevel,
+    meta: {
+      title: "Game Level",
     },
   },
 ];
