@@ -26,6 +26,24 @@
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #dc2626;
+
+  /* Card Colors */
+  --color-card-bg: #ffffff;
+  --color-card-border: #e5e7eb;
+  --color-card-shadow: rgba(0, 0, 0, 0.05);
+
+  /* Resource Colors */
+  --color-balance: #10b981;
+  --color-energy: #f59e0b;
+  --color-asset: #6366f1;
+
+  /* Button Colors */
+  --color-button-primary: #3b82f6;
+  --color-button-primary-hover: #2563eb;
+  --color-button-secondary: #f3f4f6;
+  --color-button-secondary-hover: #e5e7eb;
+  --color-button-text: #ffffff;
+  --color-button-text-secondary: #374151;
 }
 
 body {
@@ -35,7 +53,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
 
-  background-color: #505050;
+  background-color: var(--color-background);
   margin: 0;
   padding: 0;
 }

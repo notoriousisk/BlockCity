@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import IndexPage from "@/pages/IndexPage.vue";
-import InitDataPage from "@/pages/InitDataPage.vue";
+import InitDataPage from "@/pages/UserPage.vue";
 import ThemeParamsPage from "@/pages/ThemeParamsPage.vue";
 import GamePage from "@/pages/GamePage.vue";
 import TonConnectPage from "@/pages/TonConnectPage.vue";
@@ -13,7 +13,7 @@ export const routes = [
     component: IndexPage,
   },
   {
-    path: "/init-data",
+    path: "/user",
     name: "user",
     component: InitDataPage,
     meta: {
