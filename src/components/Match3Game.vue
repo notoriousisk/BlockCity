@@ -899,6 +899,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .match3-game {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -954,7 +955,7 @@ canvas {
 
 .game-message {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: rgba(0, 0, 0, 0.8);

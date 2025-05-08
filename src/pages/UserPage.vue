@@ -69,6 +69,10 @@
           </div>
           <span class="asset-amount">{{ userStore.assets.aiAssistant }}</span>
         </div>
+        <button @click="navigateToShop" class="shop-button">
+          <ShoppingCart class="shop-icon" />
+          Shop
+        </button>
       </div>
 
       <!-- Referral Block -->
@@ -128,9 +132,12 @@ import {
   User,
   Star,
   Bot,
+  ShoppingCart,
 } from "lucide-vue-next";
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const userStore = useUserStore();
 const isCopied = ref(false);
 const { wallet } = useTonWallet();
@@ -146,6 +153,10 @@ const handleCopyReferral = async () => {
   setTimeout(() => {
     isCopied.value = false;
   }, 2000); // Reset after 2 seconds
+};
+
+const navigateToShop = () => {
+  router.push("/shop");
 };
 </script>
 
@@ -457,5 +468,32 @@ h3 {
   background-color: var(--color-light);
   border-radius: 12px;
   font-size: 1.1rem;
+}
+
+.shop-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  background-color: var(--color-button-primary);
+  color: var(--color-button-text);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.shop-button:hover {
+  background-color: var(--color-button-primary-hover);
+}
+
+.shop-icon {
+  width: 20px;
+  height: 20px;
 }
 </style>

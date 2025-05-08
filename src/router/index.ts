@@ -22,7 +22,7 @@ export const routes = [
     },
   },
   {
-    path: "/theme-params",
+    path: "/shop",
     name: "shop",
     component: ThemeParamsPage,
     meta: {
