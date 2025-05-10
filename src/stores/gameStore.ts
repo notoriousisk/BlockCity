@@ -12,7 +12,6 @@ export const useGameStore = defineStore("game", () => {
   const gameOver = ref(false);
   const gameResult = ref<"success" | "failure" | null>(null);
   const isReshuffling = ref(false);
-  const currentLevelIndex = ref(0);
   const showMoves = ref(false);
   const aiBot = ref(false);
   const gameState = ref<GameState>(gameStates.init);
@@ -22,6 +21,8 @@ export const useGameStore = defineStore("game", () => {
   const clusters = ref<Cluster[]>([]);
   const moves = ref<Move[]>([]);
   const currentMove = ref<Move>({ column1: 0, row1: 0, column2: 0, row2: 0 });
+
+  const currentLevel = ref();
 
   // Game level state
   const level = ref<Level>({
@@ -35,9 +36,6 @@ export const useGameStore = defineStore("game", () => {
   });
 
   // Computed properties
-  const currentLevel = computed(
-    () => gameConfig.levels[currentLevelIndex.value]
-  );
   const requiredScore = computed(() => currentLevel.value.requiredScore);
   const columns = computed(() => currentLevel.value.columns);
   const rows = computed(() => currentLevel.value.rows);
@@ -48,7 +46,7 @@ export const useGameStore = defineStore("game", () => {
   const fetchUserLevelConfig = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
-    return gameConfig;
+    currentLevel.value = gameConfig;
   };
 
   const resetGame = () => {
@@ -123,13 +121,6 @@ export const useGameStore = defineStore("game", () => {
     aiBot.value = !aiBot.value;
   };
 
-  const nextLevel = () => {
-    if (currentLevelIndex.value < gameConfig.levels.length - 1) {
-      currentLevelIndex.value++;
-      resetGame();
-    }
-  };
-
   return {
     // State
     score,
@@ -137,7 +128,6 @@ export const useGameStore = defineStore("game", () => {
     gameOver,
     gameResult,
     isReshuffling,
-    currentLevelIndex,
     showMoves,
     aiBot,
     gameState,
@@ -172,6 +162,5 @@ export const useGameStore = defineStore("game", () => {
     setLevel,
     toggleShowMoves,
     toggleAiBot,
-    nextLevel,
   };
 });

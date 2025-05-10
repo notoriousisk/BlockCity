@@ -1,6 +1,6 @@
 <template>
-  <div class="game-page">
-    <div class="corner-element level">Level {{ "1" }}</div>
+  <div class="game-page" v-if="currentLevel">
+    <div class="corner-element level">Level {{ currentLevel.index }}</div>
     <div class="corner-element exit">
       <button class="exit-button" @click="goToGamePage">✕</button>
     </div>
@@ -25,6 +25,12 @@
       />
     </div>
   </div>
+  <div v-else class="loading">
+    <div class="corner-element exit">
+      <button class="exit-button" @click="goToGamePage">✕</button>
+    </div>
+    Error loading game configuration...
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -35,7 +41,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const gameStore = useGameStore();
-const { score, movesLeft, requiredScore, columns, rows, level } =
+const { score, movesLeft, requiredScore, columns, rows, currentLevel } =
   storeToRefs(gameStore);
 const { updateScore, resetGame } = gameStore;
 
@@ -115,5 +121,13 @@ const goToGamePage = () => {
   font-weight: 500;
   color: var(--tg-theme-text-color);
   border-radius: 8px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
 }
 </style>

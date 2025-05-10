@@ -1,7 +1,11 @@
 <template>
   <AppPage title="Game">
     <div class="game-bg-inner">
-      <button class="next-level-btn" @click="goToNextLevel">
+      <button
+        class="next-level-btn"
+        @click="goToNextLevel"
+        :disabled="!currentLevel"
+      >
         Next level
         <span class="energy-label">
           -10
@@ -15,12 +19,25 @@
 import AppPage from "@/components/AppPage.vue";
 import { useRouter } from "vue-router";
 import { Zap } from "lucide-vue-next";
+import { onMounted } from "vue";
+import { storeToRefs } from "pinia";
+import { useGameStore } from "@/stores/gameStore";
 
 const ZapIcon = Zap;
 const router = useRouter();
+const gameStore = useGameStore();
+const { currentLevel } = storeToRefs(gameStore);
+const { fetchUserLevelConfig } = gameStore;
+
 const goToNextLevel = () => {
-  router.push({ name: "GameLevel" });
+  if (currentLevel.value) {
+    router.push({ name: "GameLevel" });
+  }
 };
+
+onMounted(async () => {
+  await fetchUserLevelConfig();
+});
 </script>
 <style scoped>
 /* Remove AppPage .content padding for this page */
