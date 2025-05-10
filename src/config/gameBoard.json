@@ -7,7 +7,7 @@
   "scoreMultiplier": 100,
   "movesLimit": 3,
   "colorsLimit": 7,
-  "requiredScore": 1000,
+  "requiredScore": 600,
   "grid": [
     [0, 4, 2, 3, 4, 2, 3, 1],
     [1, 2, 3, 1, 2, 3, 1, 4],

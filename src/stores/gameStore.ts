@@ -3,8 +3,6 @@ import { defineStore } from "pinia";
 import type { Level, Cluster, Move, GameState } from "@/game/types";
 import { gameStates } from "@/game/types";
 
-import gameConfig from "@/config/gameBoard.json";
-
 export const useGameStore = defineStore("game", () => {
   // Game state
   const score = ref(0);
@@ -36,19 +34,14 @@ export const useGameStore = defineStore("game", () => {
   });
 
   // Computed properties
-  const requiredScore = computed(() => currentLevel.value.requiredScore);
-  const columns = computed(() => currentLevel.value.columns);
-  const rows = computed(() => currentLevel.value.rows);
-  const minMatchLength = computed(() => currentLevel.value.minMatchLength);
-  const colorsLimit = computed(() => currentLevel.value.colorsLimit);
+  const requiredScore = computed(() => currentLevel.value?.requiredScore);
+  const columns = computed(() => currentLevel.value?.columns);
+  const rows = computed(() => currentLevel.value?.rows);
+  const minMatchLength = computed(() => currentLevel.value?.minMatchLength);
+  const colorsLimit = computed(() => currentLevel.value?.colorsLimit);
+  const scoreMultiplier = computed(() => currentLevel.value?.scoreMultiplier);
 
   // Actions
-  const fetchUserLevelConfig = async () => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    currentLevel.value = gameConfig;
-  };
-
   const resetGame = () => {
     score.value = 0;
     movesLeft.value = currentLevel.value.movesLimit;
@@ -62,7 +55,6 @@ export const useGameStore = defineStore("game", () => {
     clusters.value = [];
     moves.value = [];
     currentMove.value = { column1: 0, row1: 0, column2: 0, row2: 0 };
-    currentLevel.value = null;
   };
 
   const updateScore = (scoreToAdd: number) => {
@@ -139,15 +131,15 @@ export const useGameStore = defineStore("game", () => {
     moves,
     currentMove,
     level,
-    // Computed
     currentLevel,
+    // Computed
     requiredScore,
     columns,
     rows,
     minMatchLength,
     colorsLimit,
+    scoreMultiplier,
     // Actions
-    fetchUserLevelConfig,
     resetGame,
     updateScore,
     decreaseMoves,

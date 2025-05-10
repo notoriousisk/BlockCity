@@ -12,6 +12,7 @@
           <ZapIcon />
         </span>
       </button>
+      <div v-if="isLoading" class="loading-overlay">Loading game data...</div>
     </div>
   </AppPage>
 </template>
@@ -19,19 +20,41 @@
 import AppPage from "@/components/AppPage.vue";
 import { useRouter } from "vue-router";
 import { Zap } from "lucide-vue-next";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
+import gameConfig from "@/config/gameBoard.json";
 
 const ZapIcon = Zap;
 const router = useRouter();
 const gameStore = useGameStore();
 const { currentLevel } = storeToRefs(gameStore);
-const { fetchUserLevelConfig } = gameStore;
+const isLoading = ref(true);
+
+// Fetch level config here instead of inside the Match3Game component
+const fetchUserLevelConfig = async () => {
+  try {
+    isLoading.value = true;
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Set the level config directly
+    currentLevel.value = gameConfig;
+    isLoading.value = false;
+  } catch (error) {
+    console.error("Error fetching level config:", error);
+    isLoading.value = false;
+  }
+};
 
 const goToNextLevel = () => {
   if (currentLevel.value) {
-    router.push({ name: "GameLevel" });
+    // Pass the level config via router navigation
+    router.push({
+      name: "GameLevel",
+      params: {
+        // We don't need to pass the config as param since it's already in the store
+      },
+    });
   }
 };
 
@@ -104,5 +127,20 @@ body {
 .next-level-btn:hover {
   background: #7bc0e0;
   box-shadow: 0 12px 40px #8dccedcc, 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 1.5rem;
+  z-index: 1001;
 }
 </style>

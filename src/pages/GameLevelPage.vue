@@ -16,13 +16,30 @@
           <span>{{ movesLeft }}</span>
         </div>
       </div>
+
       <Match3Game
-        :columns="columns"
-        :rows="rows"
-        :tileSize="40"
-        @update:score="updateScore"
-        @reset:score="resetGame"
+        v-if="currentLevel"
+        :levelConfig="currentLevel"
+        ref="gameRef"
       />
+
+      <div class="game-controls">
+        <button class="control-button" @click="handleNewGame">New Game</button>
+        <button
+          class="control-button"
+          @click="toggleShowMoves"
+          :disabled="gameOver"
+        >
+          {{ showMoves ? "Hide" : "Show" }} Moves
+        </button>
+        <button
+          class="control-button"
+          @click="toggleAiBot"
+          :disabled="gameOver"
+        >
+          {{ aiBot ? "Disable" : "Enable" }} AI Bot
+        </button>
+      </div>
     </div>
   </div>
   <div v-else class="loading">
@@ -38,16 +55,59 @@ import { storeToRefs } from "pinia";
 import Match3Game from "@/components/Match3Game.vue";
 import { useGameStore } from "@/stores/gameStore";
 import { useRouter } from "vue-router";
+import { onMounted, ref } from "vue";
 
 const router = useRouter();
 const gameStore = useGameStore();
-const { score, movesLeft, requiredScore, columns, rows, currentLevel } =
-  storeToRefs(gameStore);
-const { updateScore, resetGame } = gameStore;
+const {
+  score,
+  movesLeft,
+  requiredScore,
+  currentLevel,
+  gameOver,
+  showMoves,
+  aiBot,
+} = storeToRefs(gameStore);
+
+// Type for the Match3Game component with its exposed methods
+interface GameRef {
+  restartGame: () => void;
+  refreshMoves: () => void;
+}
+
+// Reference to the Match3Game component
+const gameRef = ref<GameRef | null>(null);
 
 const goToGamePage = () => {
   router.push("/game");
 };
+
+// Button handlers
+const handleNewGame = () => {
+  if (gameRef.value) {
+    gameRef.value.restartGame();
+  }
+};
+
+const toggleShowMoves = () => {
+  gameStore.toggleShowMoves();
+  // Force a moves check when enabling
+  if (showMoves.value && gameRef.value) {
+    gameRef.value.refreshMoves();
+  }
+};
+
+const toggleAiBot = () => {
+  gameStore.toggleAiBot();
+};
+
+// Check if level config is available
+onMounted(() => {
+  if (!currentLevel.value) {
+    // If no level config is available, go back to game page
+    goToGamePage();
+  }
+});
 </script>
 
 <style scoped>
@@ -112,6 +172,7 @@ const goToGamePage = () => {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  margin-bottom: 16px;
 }
 
 .game-info-element {
@@ -129,5 +190,33 @@ const goToGamePage = () => {
   align-items: center;
   min-height: 100vh;
   font-size: 1.2rem;
+}
+
+.game-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.control-button {
+  padding: 8px 16px;
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.control-button:hover {
+  opacity: 0.8;
+}
+
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

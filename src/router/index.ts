@@ -2,10 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import IndexPage from "@/pages/IndexPage.vue";
 import InitDataPage from "@/pages/UserPage.vue";
 import ThemeParamsPage from "@/pages/ThemeParamsPage.vue";
-import GamePage from "@/pages/GamePage.vue";
+import GamePage from "@/pages/StartGamePage.vue";
 import TonConnectPage from "@/pages/TonConnectPage.vue";
 import IconTonConnect from "@/components/IconTonConnect.vue";
-import GameLevel from "@/pages/GameLevel.vue";
+import GameLevel from "@/pages/GameLevelPage.vue";
 
 export const routes = [
   {
