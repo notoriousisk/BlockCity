@@ -35,3 +35,13 @@ export interface Move {
 
 export const gameStates = { init: 0, ready: 1, resolve: 2 } as const;
 export type GameState = (typeof gameStates)[keyof typeof gameStates];
+
+export const tileColors: string[] = [
+  "#ea554e",
+  "#a34eea",
+  "#4E95EA",
+  "#5BD3AA",
+  "#e3ea4e",
+  "#eaa34e",
+  "#e6b0aa",
+];

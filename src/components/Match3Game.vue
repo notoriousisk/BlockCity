@@ -43,8 +43,8 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { storeToRefs } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
-import { TILE_SIZE, gameStates } from "@/components/game/types";
-import type { Level, Cluster } from "@/components/game/types";
+import { TILE_SIZE, gameStates, tileColors } from "@/game/types";
+import type { Level, Cluster } from "@/game/types";
 
 const gameStore = useGameStore();
 const {
@@ -63,16 +63,6 @@ const {
   level,
   currentLevel,
 } = storeToRefs(gameStore);
-
-const tileColors: string[] = [
-  "#ea554e",
-  "#a34eea",
-  "#4E95EA",
-  "#5BD3AA",
-  "#e3ea4e",
-  "#eaa34e",
-  "#e6b0aa",
-];
 
 const gameCanvas = ref<HTMLCanvasElement | null>(null);
 const canvasWidth = ref(currentLevel.value.columns * TILE_SIZE);

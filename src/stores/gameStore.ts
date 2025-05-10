@@ -1,7 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import type { Level, Cluster, Move, GameState } from "@/components/game/types";
-import { gameStates } from "@/components/game/types";
+import type { Level, Cluster, Move, GameState } from "@/game/types";
+import { gameStates } from "@/game/types";
 
 import gameConfig from "@/config/gameBoard.json";
 
@@ -62,6 +62,7 @@ export const useGameStore = defineStore("game", () => {
     clusters.value = [];
     moves.value = [];
     currentMove.value = { column1: 0, row1: 0, column2: 0, row2: 0 };
+    currentLevel.value = null;
   };
 
   const updateScore = (scoreToAdd: number) => {
