@@ -8,7 +8,7 @@
       >
         Next level
         <span class="energy-label">
-          -10
+          -{{ currentLevel?.energyCost ?? 10 }}
           <ZapIcon />
         </span>
       </button>
@@ -23,12 +23,16 @@ import { Zap } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
-import gameConfig from "@/config/gameBoard.json";
+import { useUserStore } from "@/stores/userStore";
+import { loadLevel } from "@/game/api";
 
 const ZapIcon = Zap;
 const router = useRouter();
 const gameStore = useGameStore();
+const userStore = useUserStore();
 const { currentLevel } = storeToRefs(gameStore);
+const { currentLevelId, energy } = storeToRefs(userStore);
+const { spendEnergyAction } = userStore;
 const isLoading = ref(true);
 
 // Fetch level config here instead of inside the Match3Game component
@@ -38,7 +42,7 @@ const fetchUserLevelConfig = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
     // Set the level config directly
-    currentLevel.value = gameConfig;
+    currentLevel.value = await loadLevel(currentLevelId.value);
     isLoading.value = false;
   } catch (error) {
     console.error("Error fetching level config:", error);
@@ -46,14 +50,17 @@ const fetchUserLevelConfig = async () => {
   }
 };
 
-const goToNextLevel = () => {
+const goToNextLevel = async () => {
   if (currentLevel.value) {
+    if (energy.value < currentLevel.value.energyCost) {
+      router.push({
+        name: "UserPage",
+      });
+    }
     // Pass the level config via router navigation
+    await spendEnergyAction(currentLevel.value.energyCost);
     router.push({
       name: "GameLevel",
-      params: {
-        // We don't need to pass the config as param since it's already in the store
-      },
     });
   }
 };

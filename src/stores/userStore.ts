@@ -3,15 +3,28 @@ import { defineStore } from "pinia";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
 import { type DisplayDataRow } from "@/components/AppDisplayData.vue";
 
+import type { UserDoc, Assets } from "@/types";
+
+import {
+  initUser,
+  onUserDataChange,
+  spendEnergy,
+  completeLevel,
+} from "@/firebase/firebaseService";
+
 export const useUserStore = defineStore("user", () => {
+  const userDoc = ref<UserDoc | null>(null);
+  const unsub = ref<() => void>();
+
+  const initDataRef = useSignal(initData.state);
+
   // State
   const balance = ref(0);
   const energy = ref(100); // Default energy value
-  const assets = ref({
-    moves: 0,
-    aiAssistant: 0,
-  });
-  const initDataRef = useSignal(initData.state);
+  const assets = ref<Assets>({ showAvailableMoves: 0, aiAssistant: 0 });
+  const currentLevelId = ref(1);
+  const numberOfRefs = ref(0);
+  const referralMultiplier = ref(1);
 
   // Computed properties
   const user = computed(() => initDataRef.value?.user);
@@ -26,7 +39,9 @@ export const useUserStore = defineStore("user", () => {
   });
   const userUsername = computed(() => user.value?.username || "");
   const referralCode = computed(() => {
-    return user.value ? `https://t.me/your_bot?start=${user.value.id}` : "";
+    return initDataRef.value?.user
+      ? `https://t.me/your_bot?start=${initDataRef.value.user.id}`
+      : "";
   });
 
   // Helper functions
@@ -44,18 +59,38 @@ export const useUserStore = defineStore("user", () => {
       { title: "added_to_attachment_menu", value: user.addedToAttachmentMenu },
     ];
   }
+
+  async function init() {
+    const td = initDataRef.value;
+    if (!td?.user) return;
+    const telegramId = td.user.id.toString();
+    const refParam = td.startParam ?? null;
+
+    await initUser(telegramId, refParam);
+    // subscribe
+    unsub.value = onUserDataChange(telegramId, (data) => {
+      userDoc.value = data;
+      balance.value = data.balance;
+      energy.value = data.energy;
+      assets.value = data.assets;
+      currentLevelId.value = data.currentLevelId;
+      numberOfRefs.value = data.numberOfRefs;
+      referralMultiplier.value = data.referralMultiplier;
+    });
+  }
   // Actions
-  const updateBalance = (newBalance: number) => {
-    balance.value = newBalance;
-  };
+  async function spendEnergyAction(cost: number) {
+    if (!userDoc.value) return;
+    await spendEnergy(userDoc.value.telegramId, cost);
+  }
 
-  const updateEnergy = (newEnergy: number) => {
-    energy.value = Math.max(0, Math.min(100, newEnergy)); // Clamp between 0 and 100
-  };
-
-  const updateAssets = (newAssets: { moves: number; aiAssistant: number }) => {
-    assets.value = newAssets;
-  };
+  async function completeLevelAction(levelConfig: {
+    id: number;
+    reward: number;
+  }) {
+    if (!userDoc.value) return;
+    await completeLevel(userDoc.value.telegramId, levelConfig.id, levelConfig.reward);
+  }
 
   const copyReferralLink = async () => {
     try {
@@ -72,6 +107,9 @@ export const useUserStore = defineStore("user", () => {
     balance,
     energy,
     assets,
+    currentLevelId,
+    numberOfRefs,
+    referralMultiplier,
     // Computed
     user,
     userRows,
@@ -79,10 +117,10 @@ export const useUserStore = defineStore("user", () => {
     userName,
     userUsername,
     referralCode,
-    // Actions
-    updateBalance,
-    updateEnergy,
-    updateAssets,
+    // actions
+    init,
+    spendEnergyAction,
+    completeLevelAction,
     copyReferralLink,
   };
 });

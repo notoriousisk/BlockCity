@@ -60,7 +60,7 @@
             <BringToFront class="asset-icon" />
             <span class="asset-name">Hints for 60 sec</span>
           </div>
-          <span class="asset-amount">{{ userStore.assets.moves }}</span>
+          <span class="asset-amount">{{ userStore.assets.showAvailableMoves }}</span>
         </div>
         <div class="asset-item">
           <div class="asset-header">

@@ -1,0 +1,34 @@
+import type { Timestamp } from "firebase/firestore";
+
+export interface GameBackendLevel {
+  id: number;
+  index: number;
+  columns: number;
+  rows: number;
+  minMatchLength: number;
+  scoreMultiplier: number;
+  movesLimit: number;
+  colorsLimit: number;
+  requiredScore: number;
+  grid: number[];
+  energyCost: number;
+  reward: number;
+}
+
+export interface Assets {
+  showAvailableMoves: number;
+  aiAssistant: number;
+}
+
+export interface UserDoc {
+  telegramId: string;
+  walletAddress: string;
+  balance: number;
+  energy: number;
+  assets: Assets;
+  currentLevelId: number;
+  numberOfRefs: number;
+  referralMultiplier: number;
+  lastEnergyUpdate: Timestamp;
+  referredBy?: string | null;
+}
