@@ -21,6 +21,7 @@
         v-if="currentLevel"
         :levelConfig="currentLevel"
         ref="gameRef"
+        @levelcomplete="handleLevelComplete"
       />
 
       <div class="game-controls">
@@ -54,11 +55,13 @@
 import { storeToRefs } from "pinia";
 import Match3Game from "@/components/Match3Game.vue";
 import { useGameStore } from "@/stores/gameStore";
+import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 
 const router = useRouter();
 const gameStore = useGameStore();
+const userStore = useUserStore();
 const {
   score,
   movesLeft,
@@ -79,7 +82,22 @@ interface GameRef {
 const gameRef = ref<GameRef | null>(null);
 
 const goToGamePage = () => {
+  gameStore.resetGame();
   router.push("/game");
+};
+
+// Handler for level complete event
+const handleLevelComplete = (levelConfig: { id: number; reward?: number }) => {
+  // Call completeLevelAction with level id and reward
+  userStore.completeLevelAction({
+    id: levelConfig.id,
+    reward: levelConfig.reward || 0,
+  });
+
+  // Navigate to StartGamePage after 3 seconds
+  setTimeout(() => {
+    goToGamePage();
+  }, 3000);
 };
 
 // Button handlers

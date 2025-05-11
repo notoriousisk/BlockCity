@@ -54,6 +54,9 @@ const props = defineProps({
   },
 });
 
+// Define emits
+const emit = defineEmits(["levelcomplete"]);
+
 const gameStore = useGameStore();
 const {
   gameOver,
@@ -142,6 +145,13 @@ const refreshMoves = () => {
 
 // Watch for changes in the level config
 watch(() => props.levelConfig, init, { immediate: false });
+
+// Watch for game result changes to emit levelcomplete
+watch([gameOver, gameResult], ([newGameOver, newGameResult]) => {
+  if (newGameOver && newGameResult === "success") {
+    emit("levelcomplete", props.levelConfig);
+  }
+});
 
 // Main game loop
 const main = (tframe: number) => {

@@ -40,7 +40,9 @@
               <BadgeDollarSign class="resource-icon" />
               <span class="resource-label">Balance</span>
             </div>
-            <span class="resource-value">{{ userStore.balance }} $</span>
+            <span class="resource-value"
+              >{{ Math.floor(userStore.balance) }} $</span
+            >
           </div>
           <div class="resource-item">
             <div class="resource-header">
@@ -60,7 +62,9 @@
             <BringToFront class="asset-icon" />
             <span class="asset-name">Hints for 60 sec</span>
           </div>
-          <span class="asset-amount">{{ userStore.assets.showAvailableMoves }}</span>
+          <span class="asset-amount">{{
+            userStore.assets.showAvailableMoves
+          }}</span>
         </div>
         <div class="asset-item">
           <div class="asset-header">
@@ -316,6 +320,10 @@ h3 {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .resource-item:nth-child(1) .resource-value {
