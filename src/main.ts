@@ -24,9 +24,9 @@ const pinia = createPinia();
 app.config.errorHandler = errorHandler;
 app.use(pinia);
 app.use(router);
-// app.use(TonConnectUIPlugin, {
-//   manifestUrl: publicUrl("tonconnect-manifest.json"),
-// });
+app.use(TonConnectUIPlugin, {
+  manifestUrl: publicUrl("tonconnect-manifest.json"),
+});
 app.mount("#app");
 
 const userStore = useUserStore();

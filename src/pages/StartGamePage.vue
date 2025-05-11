@@ -6,7 +6,7 @@
         @click="goToNextLevel"
         :disabled="!currentLevel"
       >
-        Next level
+        Next level {{ currentLevel?.index ?? "" }}
         <span class="energy-label">
           -{{ currentLevel?.energyCost ?? 10 }}
           <ZapIcon />

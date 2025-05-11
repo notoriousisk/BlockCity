@@ -44,6 +44,7 @@ export async function initUser(
       numberOfRefs: 0,
       referralMultiplier: referralCode ? 1.1 : 1,
       lastEnergyUpdate: serverTimestamp() as Timestamp,
+      energyRefillRateMs: 60000, // 1 energy per minute
       referredBy: referralCode,
     };
     await setDoc(userRef, data);
@@ -63,7 +64,7 @@ export async function initUser(
   }
 }
 
-/** Subscribe to realtime updates on this user’s doc. */
+/** Subscribe to realtime updates on this user's doc. */
 export function onUserDataChange(
   telegramId: string,
   callback: (data: UserDoc) => void
@@ -84,13 +85,16 @@ export async function spendEnergy(
   if (!snap.exists()) return;
   const data = snap.data() as UserDoc;
 
-  // refill rate: 1 energy per 5 minutes
+  // Use the user's custom refill rate
   const now = Timestamp.now().toDate();
   const last = data.lastEnergyUpdate.toDate();
-  const mins = (now.getTime() - last.getTime()) / 60000;
-  const refill = Math.floor(mins);
+  const elapsedMs = now.getTime() - last.getTime();
+  const refill = Math.floor(elapsedMs / data.energyRefillRateMs);
   let newEnergy = data.energy + refill - cost;
+  console.log("refill", refill);
+  console.log("before", newEnergy);
   newEnergy = Math.max(0, Math.min(100, newEnergy));
+  console.log("after", newEnergy);
 
   await updateDoc(userRef, {
     energy: newEnergy,

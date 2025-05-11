@@ -30,5 +30,6 @@ export interface UserDoc {
   numberOfRefs: number;
   referralMultiplier: number;
   lastEnergyUpdate: Timestamp;
+  energyRefillRateMs: number;
   referredBy?: string | null;
 }

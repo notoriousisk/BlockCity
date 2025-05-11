@@ -20,12 +20,14 @@ const userStore = useUserStore();
         <span class="money-badge">
           <BadgeDollarSign class="money-icon" />
           <span class="money-colon">:</span>
-          <span class="money-amount">{{ userStore.balance }}$</span>
+          <span class="money-amount">{{ Math.floor(userStore.balance) }}$</span>
         </span>
         <span class="energy-badge">
           <Zap class="energy-icon" />
           <span class="energy-colon">:</span>
-          <span class="energy-amount">{{ userStore.energy }}</span>
+          <span class="energy-amount"
+            >{{ Math.floor(userStore.energy) }}/100</span
+          >
         </span>
       </div>
       <AppLink class="game-button" :to="{ name: 'game' }">Play</AppLink>

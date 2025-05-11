@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 import { defineStore } from "pinia";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
 import { type DisplayDataRow } from "@/components/AppDisplayData.vue";
@@ -14,7 +14,8 @@ import {
 
 export const useUserStore = defineStore("user", () => {
   const userDoc = ref<UserDoc | null>(null);
-  const unsub = ref<() => void>();
+  const unsub = ref<(() => void) | undefined>();
+  const energyRefreshInterval = ref<number | undefined>(undefined);
 
   const initDataRef = useSignal(initData.state);
 
@@ -77,7 +78,34 @@ export const useUserStore = defineStore("user", () => {
       numberOfRefs.value = data.numberOfRefs;
       referralMultiplier.value = data.referralMultiplier;
     });
+
+    // Start interval to refresh energy in real-time
+    startEnergyRefreshInterval();
   }
+
+  // Start interval to update energy in real-time
+  function startEnergyRefreshInterval() {
+    // Clear existing interval if any
+    if (energyRefreshInterval.value) {
+      clearInterval(energyRefreshInterval.value);
+    }
+
+    // Set new interval to refresh energy every minute
+    energyRefreshInterval.value = window.setInterval(() => {
+      if (userDoc.value) {
+        spendEnergyAction(0); // Call with 0 cost to just refresh the energy
+      }
+    }, 60000); // 60000ms = 1 minute
+  }
+
+  // Clean up interval when store is no longer used
+  function stopEnergyRefreshInterval() {
+    if (energyRefreshInterval.value) {
+      clearInterval(energyRefreshInterval.value);
+      energyRefreshInterval.value = undefined;
+    }
+  }
+
   // Actions
   async function spendEnergyAction(cost: number) {
     if (!userDoc.value) return;
@@ -89,7 +117,11 @@ export const useUserStore = defineStore("user", () => {
     reward: number;
   }) {
     if (!userDoc.value) return;
-    await completeLevel(userDoc.value.telegramId, levelConfig.id, levelConfig.reward);
+    await completeLevel(
+      userDoc.value.telegramId,
+      levelConfig.id,
+      levelConfig.reward
+    );
   }
 
   const copyReferralLink = async () => {
@@ -101,6 +133,14 @@ export const useUserStore = defineStore("user", () => {
       return false;
     }
   };
+
+  // Clean up on unmount
+  onUnmounted(() => {
+    if (unsub.value) {
+      unsub.value();
+    }
+    stopEnergyRefreshInterval();
+  });
 
   return {
     // State
@@ -122,5 +162,7 @@ export const useUserStore = defineStore("user", () => {
     spendEnergyAction,
     completeLevelAction,
     copyReferralLink,
+    startEnergyRefreshInterval,
+    stopEnergyRefreshInterval,
   };
 });

@@ -1,6 +1,6 @@
 <template>
   <AppPage title="Profile">
-    <div v-if="!userStore.userRows" class="error-message">
+    <div v-if="!userRows" class="error-message">
       Application was launched with missing init data
     </div>
     <template v-else>
@@ -9,8 +9,8 @@
         <div class="profile-header">
           <div class="profile-photo-container">
             <img
-              v-if="userStore.userPhotoUrl"
-              :src="userStore.userPhotoUrl"
+              v-if="userPhotoUrl"
+              :src="userPhotoUrl"
               alt="Profile"
               class="profile-photo"
             />
@@ -18,14 +18,12 @@
           </div>
           <div class="profile-info">
             <div class="name-container">
-              <h2 class="profile-name">{{ userStore.userName }}</h2>
-              <Star v-if="userStore.user?.isPremium" class="premium-star" />
+              <h2 class="profile-name">{{ userName }}</h2>
+              <Star v-if="user?.isPremium" class="premium-star" />
             </div>
             <div class="username-container">
-              <p class="profile-username">@{{ userStore.userUsername }}</p>
-              <span v-if="userStore.user?.isPremium" class="premium-badge"
-                >Premium</span
-              >
+              <p class="profile-username">@{{ userUsername }}</p>
+              <span v-if="user?.isPremium" class="premium-badge">Premium</span>
             </div>
           </div>
         </div>
@@ -40,16 +38,14 @@
               <BadgeDollarSign class="resource-icon" />
               <span class="resource-label">Balance</span>
             </div>
-            <span class="resource-value"
-              >{{ Math.floor(userStore.balance) }} $</span
-            >
+            <span class="resource-value">{{ Math.floor(balance) }} $</span>
           </div>
           <div class="resource-item">
             <div class="resource-header">
               <Zap class="resource-icon" />
               <span class="resource-label">Energy</span>
             </div>
-            <span class="resource-value">{{ userStore.energy }}/100</span>
+            <span class="resource-value">{{ energy }}/100</span>
           </div>
         </div>
       </div>
@@ -62,16 +58,14 @@
             <BringToFront class="asset-icon" />
             <span class="asset-name">Hints for 60 sec</span>
           </div>
-          <span class="asset-amount">{{
-            userStore.assets.showAvailableMoves
-          }}</span>
+          <span class="asset-amount">{{ assets.showAvailableMoves }}</span>
         </div>
         <div class="asset-item">
           <div class="asset-header">
             <Bot class="asset-icon" />
             <span class="asset-name">AI Assistant for 60 sec</span>
           </div>
-          <span class="asset-amount">{{ userStore.assets.aiAssistant }}</span>
+          <span class="asset-amount">{{ assets.aiAssistant }}</span>
         </div>
         <button @click="navigateToShop" class="shop-button">
           <ShoppingCart class="shop-icon" />
@@ -82,10 +76,14 @@
       <!-- Referral Block -->
       <div class="referral-block">
         <h3>Referral Link</h3>
+        <div class="referral-multiplier">
+          <div class="multiplier-label">Current Referral Multiplier:</div>
+          <div class="multiplier-value">{{ referralMultiplier }}x</div>
+        </div>
         <div class="referral-link-container">
           <input
             type="text"
-            :value="userStore.referralCode"
+            :value="referralCode"
             readonly
             class="referral-input"
           />
@@ -126,9 +124,9 @@
 </template>
 
 <script setup lang="ts">
-import AppPage from "@/components/AppPage.vue";
-import { useUserStore } from "@/stores/userStore";
-import { TonConnectButton, useTonWallet } from "@/tonconnect";
+import { ref, computed } from "vue";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 import {
   BadgeDollarSign,
   Zap,
@@ -138,13 +136,31 @@ import {
   Bot,
   ShoppingCart,
 } from "lucide-vue-next";
-import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
+
+import AppPage from "@/components/AppPage.vue";
+import { useUserStore } from "@/stores/userStore";
+import { TonConnectButton, useTonWallet } from "@/tonconnect";
 
 const router = useRouter();
-const userStore = useUserStore();
 const isCopied = ref(false);
 const { wallet } = useTonWallet();
+
+// Destructure values from userStore
+const userStore = useUserStore();
+const {
+  userRows,
+  userPhotoUrl,
+  userName,
+  user,
+  userUsername,
+  balance,
+  energy,
+  assets,
+  referralMultiplier,
+  referralCode,
+} = storeToRefs(userStore);
+
+const { copyReferralLink } = userStore;
 
 const walletExtended = computed(() => {
   return wallet.value && "imageUrl" in wallet.value ? wallet.value : null;
@@ -152,7 +168,7 @@ const walletExtended = computed(() => {
 
 // Handlers
 const handleCopyReferral = async () => {
-  await userStore.copyReferralLink();
+  await copyReferralLink();
   isCopied.value = true;
   setTimeout(() => {
     isCopied.value = false;
@@ -374,6 +390,28 @@ h3 {
 
 .asset-icon {
   color: var(--color-asset);
+}
+
+.referral-multiplier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: var(--color-light);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.multiplier-label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.multiplier-value {
+  font-weight: 700;
+  color: var(--color-accent);
+  font-size: 1.25rem;
 }
 
 .referral-link-container {
