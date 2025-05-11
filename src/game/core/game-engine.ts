@@ -12,7 +12,7 @@ let isUserInitiatedMatchChain = false;
  */
 export function newGame(
   level: Level,
-  grid: number[][],
+  grid: number[],
   gameState: { value: GameState },
   setReshuffling: (value: boolean) => void,
   setClusters: (clusters: Cluster[]) => void,

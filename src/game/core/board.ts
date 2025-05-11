@@ -7,7 +7,7 @@ import type { Level } from "@/game/types";
 export function initializeBoard(
   columns: number,
   rows: number,
-  grid: number[][]
+  grid: number[]
 ): Level {
   const newLevel: Level = {
     columns,
@@ -39,12 +39,13 @@ export function initializeBoard(
 /**
  * Create a level with the predefined grid
  */
-export function createLevel(level: Level, grid: number[][]): void {
+export function createLevel(level: Level, grid: number[]): void {
   for (let i = 0; i < level.columns; i++) {
     level.tiles[i] = [];
     for (let j = 0; j < level.rows; j++) {
+      const index = j * level.columns + i;
       level.tiles[i][j] = {
-        type: grid[j][i],
+        type: grid[index],
         x: i * level.tileWidth,
         y: j * level.tileHeight,
         width: level.tileWidth,

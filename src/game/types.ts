@@ -16,7 +16,7 @@ export interface Level {
   tileHeight: number;
   tiles: Tile[][];
   selectedTile: { selected: boolean; column: number; row: number };
-  grid: number[][];
+  grid: number[];
 }
 
 export interface Cluster {
