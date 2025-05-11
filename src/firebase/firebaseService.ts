@@ -88,7 +88,7 @@ export async function spendEnergy(
   const now = Timestamp.now().toDate();
   const last = data.lastEnergyUpdate.toDate();
   const mins = (now.getTime() - last.getTime()) / 60000;
-  const refill = Math.floor(mins / 5);
+  const refill = Math.floor(mins);
   let newEnergy = data.energy + refill - cost;
   newEnergy = Math.max(0, Math.min(100, newEnergy));
 
