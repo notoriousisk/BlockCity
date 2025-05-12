@@ -41,3 +41,11 @@ if (disableVerticalSwipes.isAvailable()) {
 
 const userStore = useUserStore();
 userStore.init();
+
+if (window.Telegram) {
+  window.Telegram.WebApp.setHeaderColor("#191b33");
+  window.Telegram.WebApp.setHeaderParams({
+    color: "#191b33",
+    textColor: "#ffffff",
+  });
+}
