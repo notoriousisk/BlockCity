@@ -506,7 +506,7 @@ h3 {
 
 .ton-connect-button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .error-message {
