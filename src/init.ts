@@ -29,6 +29,8 @@ export function init(debug: boolean): void {
     throw new Error("ERR_NOT_SUPPORTED");
   }
 
+  console.log("disableVerticalSwipes", disableVerticalSwipes);
+
   // Mount all components used in the project.
   miniApp.mount();
   themeParams.mount();
@@ -40,13 +42,21 @@ export function init(debug: boolean): void {
     })
     .then(() => {
       viewport.bindCssVars();
+    })
+    .finally(() => {
+      console.log("Viewport mounted", disableVerticalSwipes);
+      if (disableVerticalSwipes.isAvailable()) {
+        disableVerticalSwipes();
+        console.log("Vertical swipes disabled");
+      }
     });
-
-  if (disableVerticalSwipes.isAvailable()) {
-    disableVerticalSwipes();
-  }
 
   // Define components-related CSS variables.
   miniApp.bindCssVars();
   themeParams.bindCssVars();
+
+  if (disableVerticalSwipes.isAvailable()) {
+    disableVerticalSwipes();
+    console.log("Vertical swipes disabled");
+  }
 }
