@@ -19,9 +19,9 @@ export function init(debug: boolean): void {
   initSDK();
 
   // Add Eruda if needed.
-  if (debug) {
+  // if (debug) {
     import("eruda").then((lib) => lib.default.init()).catch(console.error);
-  }
+  // }
 
   // Check if all required components are supported.
   if (!miniApp.isSupported()) {

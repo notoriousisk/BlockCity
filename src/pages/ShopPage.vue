@@ -3,7 +3,7 @@ import AppPage from "@/components/AppPage.vue";
 </script>
 
 <template>
-  <AppPage title="Theme Params">
+  <AppPage title="Shop">
     <template #disclaimer> </template>
   </AppPage>
 </template>
