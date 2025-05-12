@@ -28,6 +28,7 @@ import { useGameStore } from "@/stores/gameStore";
 import { useUserStore } from "@/stores/userStore";
 import { loadLevel } from "@/game/api";
 import { useNavbarStore } from "@/stores/navbarStore";
+import { openToast } from "@/stores/toast";
 const ZapIcon = Zap;
 const router = useRouter();
 const gameStore = useGameStore();
@@ -59,6 +60,11 @@ const fetchUserLevelConfig = async () => {
 const goToNextLevel = async () => {
   if (currentLevel.value) {
     if (energy.value < currentLevel.value.energyCost) {
+      openToast({
+        title: "Not enough energy!",
+        content: `You need ${currentLevel.value.energyCost} energy to play this level.`,
+        type: "error",
+      });
       setActiveTab("shop");
     } else {
       // Pass the level config via router navigation

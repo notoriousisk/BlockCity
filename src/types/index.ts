@@ -38,3 +38,10 @@ export const ASSET_COSTS = {
   showAvailableMoves: 200,
   aiAssistant: 600,
 };
+
+export interface ToastProps {
+  title: string;
+  content?: string;
+  type?: "success" | "error" | "warning";
+  variant?: "default" | "compact";
+}

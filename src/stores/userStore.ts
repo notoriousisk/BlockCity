@@ -1,6 +1,7 @@
 import { ref, computed, onUnmounted, type Component } from "vue";
 import { defineStore } from "pinia";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
+import { openToast } from "@/stores/toast";
 
 import type { UserDoc, Assets } from "@/types";
 
@@ -118,11 +119,31 @@ export const useUserStore = defineStore("user", () => {
     if (!userDoc.value) return;
     const newEnergy = await spendEnergy(userDoc.value.telegramId, cost);
     energy.value = newEnergy;
+    if (cost > 0) {
+      openToast({
+        title: `-${cost} ⚡`,
+        type: "warning",
+        variant: "compact",
+      });
+    }
   }
 
   async function refillEnergyAction() {
     if (!userDoc.value) return false;
     const success = await refillEnergy(userDoc.value.telegramId);
+    if (success) {
+      openToast({
+        title: "Energy Refilled",
+        content: "Your energy has been refilled to maximum!",
+        type: "success",
+      });
+    } else {
+      openToast({
+        title: "Refill Failed",
+        content: "Not enough coins to refill energy",
+        type: "error",
+      });
+    }
     return success;
   }
 
@@ -131,6 +152,21 @@ export const useUserStore = defineStore("user", () => {
   ) {
     if (!userDoc.value) return false;
     const success = await purchaseAsset(userDoc.value.telegramId, assetType);
+    if (success) {
+      openToast({
+        title: "Asset Purchased",
+        content: `You purchased ${
+          assetType === "showAvailableMoves" ? "Hints" : "AI Assistant"
+        }`,
+        type: "success",
+      });
+    } else {
+      openToast({
+        title: "Purchase Failed",
+        content: "Not enough coins to purchase this asset",
+        type: "error",
+      });
+    }
     return success;
   }
 
@@ -139,6 +175,21 @@ export const useUserStore = defineStore("user", () => {
   ) {
     if (!userDoc.value) return false;
     const success = await spendAsset(userDoc.value.telegramId, assetType);
+    if (success) {
+      openToast({
+        title: "Boost",
+        content: ` ${
+          assetType === "showAvailableMoves" ? "Hints" : "AI Assistant"
+        } activated`,
+        type: "warning",
+      });
+    } else {
+      openToast({
+        title: "Use Failed",
+        content: "You don't have this asset available",
+        type: "error",
+      });
+    }
     return success;
   }
 
@@ -152,14 +203,28 @@ export const useUserStore = defineStore("user", () => {
       levelConfig.id,
       levelConfig.reward
     );
+    openToast({
+      title: `Level ${levelConfig.id} Complete!`,
+      content: `You earned ${levelConfig.reward} coins!`,
+      type: "success",
+    });
   }
 
   const copyReferralLink = async () => {
     try {
       await navigator.clipboard.writeText(referralCode.value);
+      openToast({
+        title: "Copied!",
+        type: "success",
+      });
       return true;
     } catch (err) {
       console.error("Failed to copy referral link:", err);
+      openToast({
+        title: "Copy Failed",
+        content: `Failed to copy referral link: ${err}`,
+        type: "error",
+      });
       return false;
     }
   };
