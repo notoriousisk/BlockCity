@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import IndexPage from "@/pages/IndexPage.vue";
 import InitDataPage from "@/pages/UserPage.vue";
-import ThemeParamsPage from "@/pages/ThemeParamsPage.vue";
+import ShopPage from "@/pages/ShopPage.vue";
 import GamePage from "@/pages/StartGamePage.vue";
-import TonConnectPage from "@/pages/TonConnectPage.vue";
-import IconTonConnect from "@/components/IconTonConnect.vue";
 import GameLevel from "@/pages/GameLevelPage.vue";
 
 export const routes = [
@@ -24,7 +22,7 @@ export const routes = [
   {
     path: "/shop",
     name: "shop",
-    component: ThemeParamsPage,
+    component: ShopPage,
     meta: {
       title: "Theme Params",
     },
@@ -35,15 +33,6 @@ export const routes = [
     component: GamePage,
     meta: {
       title: "Game Page",
-    },
-  },
-  {
-    path: "/ton-connect",
-    name: "ton-connect",
-    component: TonConnectPage,
-    meta: {
-      icon: IconTonConnect,
-      title: "TON Connect",
     },
   },
   {

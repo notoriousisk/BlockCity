@@ -146,7 +146,7 @@ onMounted(() => {
   padding: 12px;
   font-size: 1.2rem;
   font-weight: 500;
-  color: var(--tg-theme-text-color);
+  color: var(--color-light);
   background-color: var(--color-dark-accent);
   border-radius: 8px;
 }
@@ -164,7 +164,7 @@ onMounted(() => {
 .exit-button {
   background: none;
   border: none;
-  color: var(--tg-theme-text-color);
+  color: var(--color-light);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 4px 8px;
@@ -200,7 +200,7 @@ onMounted(() => {
   padding: 12px;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--tg-theme-text-color);
+  color: var(--color-light);
   border-radius: 8px;
 }
 
@@ -221,8 +221,8 @@ onMounted(() => {
 
 .control-button {
   padding: 8px 16px;
-  background-color: var(--tg-theme-button-color);
-  color: var(--tg-theme-button-text-color);
+  background-color: var(--color-button-primary);
+  color: var(--color-light);
   border: none;
   border-radius: 8px;
   font-size: 1rem;

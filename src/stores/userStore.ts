@@ -1,7 +1,6 @@
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, onUnmounted, type Component } from "vue";
 import { defineStore } from "pinia";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
-import { type DisplayDataRow } from "@/components/AppDisplayData.vue";
 
 import type { UserDoc, Assets } from "@/types";
 
@@ -11,6 +10,11 @@ import {
   spendEnergy,
   completeLevel,
 } from "@/firebase/firebaseService";
+
+export interface DisplayDataRow {
+  title: string;
+  value?: string | number | boolean | Component;
+}
 
 export const useUserStore = defineStore("user", () => {
   const userDoc = ref<UserDoc | null>(null);
