@@ -109,7 +109,8 @@ export const useUserStore = defineStore("user", () => {
   // Actions
   async function spendEnergyAction(cost: number) {
     if (!userDoc.value) return;
-    await spendEnergy(userDoc.value.telegramId, cost);
+    const newEnergy = await spendEnergy(userDoc.value.telegramId, cost);
+    energy.value = newEnergy;
   }
 
   async function completeLevelAction(levelConfig: {

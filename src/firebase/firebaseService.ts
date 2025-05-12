@@ -79,10 +79,10 @@ export function onUserDataChange(
 export async function spendEnergy(
   telegramId: string,
   cost: number
-): Promise<void> {
+): Promise<number> {
   const userRef = doc(db, "users", telegramId);
   const snap = await getDoc(userRef);
-  if (!snap.exists()) return;
+  if (!snap.exists()) return 0;
   const data = snap.data() as UserDoc;
 
   // Use the user's custom refill rate
@@ -97,6 +97,7 @@ export async function spendEnergy(
     energy: newEnergy,
     lastEnergyUpdate: serverTimestamp(),
   });
+  return newEnergy;
 }
 
 /** Mark level complete: bump level, award reward*multiplier. */
