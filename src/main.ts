@@ -1,7 +1,10 @@
 import "./assets/index.css";
 
 import { createApp } from "vue";
-import { retrieveLaunchParams } from "@telegram-apps/sdk-vue";
+import {
+  retrieveLaunchParams,
+  disableVerticalSwipes,
+} from "@telegram-apps/sdk-vue";
 import { createPinia } from "pinia";
 
 import App from "./App.vue";
@@ -31,6 +34,10 @@ app.use(TonConnectUIPlugin, {
   manifestUrl: publicUrl("tonconnect-manifest.json"),
 });
 app.mount("#app");
+
+if (disableVerticalSwipes.isAvailable()) {
+  disableVerticalSwipes();
+}
 
 const userStore = useUserStore();
 userStore.init();
