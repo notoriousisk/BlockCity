@@ -32,3 +32,6 @@ coverage
 # Environment variables
 .env
 .env.*
+
+# Firebase service account
+admin/service-account.json
