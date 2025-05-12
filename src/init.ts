@@ -6,7 +6,6 @@ import {
   $debug,
   init as initSDK,
   disableVerticalSwipes,
-  isVerticalSwipesEnabled,
 } from "@telegram-apps/sdk-vue";
 
 /**
@@ -19,11 +18,6 @@ export function init(debug: boolean): void {
   // Initialize special event handlers for Telegram Desktop, Android, iOS, etc.
   // Also, configure the package.
   initSDK();
-
-  alert("vertical " + isVerticalSwipesEnabled() + ' ' + disableVerticalSwipes.isAvailable());
-  if (disableVerticalSwipes.isAvailable()) {
-    disableVerticalSwipes();
-  }
 
   // Add Eruda if needed.
   if (debug) {
@@ -47,6 +41,10 @@ export function init(debug: boolean): void {
     .then(() => {
       viewport.bindCssVars();
     });
+
+  if (disableVerticalSwipes.isAvailable()) {
+    disableVerticalSwipes();
+  }
 
   // Define components-related CSS variables.
   miniApp.bindCssVars();
