@@ -99,7 +99,7 @@ body {
   position: relative;
 }
 .next-level-btn {
-  position: fixed;
+  position: absolute;
   left: 50%;
   bottom: 160px;
   transform: translateX(-50%);
