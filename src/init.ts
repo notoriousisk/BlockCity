@@ -1,6 +1,5 @@
 import {
   viewport,
-  themeParams,
   miniApp,
   initData,
   $debug,
@@ -33,7 +32,6 @@ export function init(debug: boolean): void {
 
   // Mount all components used in the project.
   miniApp.mount();
-  themeParams.mount();
   initData.restore();
   void viewport
     .mount()
@@ -50,10 +48,6 @@ export function init(debug: boolean): void {
         console.log("Vertical swipes disabled");
       }
     });
-
-  // Define components-related CSS variables.
-  miniApp.bindCssVars();
-  themeParams.bindCssVars();
 
   if (disableVerticalSwipes.isAvailable()) {
     disableVerticalSwipes();
