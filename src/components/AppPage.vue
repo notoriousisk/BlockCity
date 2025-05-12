@@ -1,17 +1,18 @@
-<script setup lang="ts">
-import NavBar from "@/components/NavBar.vue";
-
-defineProps<{ title: string; disclaimer?: string }>();
-</script>
-
 <template>
   <div class="page">
+    <slot name="header" />
     <div class="content">
       <slot />
     </div>
     <NavBar />
   </div>
 </template>
+
+<script setup lang="ts">
+import NavBar from "@/components/NavBar.vue";
+
+defineProps<{ title: string; disclaimer?: string }>();
+</script>
 
 <style scoped>
 .page {

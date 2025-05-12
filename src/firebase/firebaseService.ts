@@ -10,6 +10,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import type { GameBackendLevel, UserDoc } from "@/types";
+import { ASSET_COSTS } from "@/types";
 
 // —— Levels: fetch all or one ——
 
@@ -129,12 +130,7 @@ export async function purchaseAsset(
   if (!snap.exists()) return false;
   const data = snap.data() as UserDoc;
 
-  const costs = {
-    showAvailableMoves: 200,
-    aiAssistant: 600,
-  };
-
-  const cost = costs[assetType];
+  const cost = ASSET_COSTS[assetType];
   if (data.balance < cost) return false;
 
   await updateDoc(userRef, {

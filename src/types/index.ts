@@ -33,3 +33,8 @@ export interface UserDoc {
   energyRefillRateMs: number;
   referredBy?: string | null;
 }
+
+export const ASSET_COSTS = {
+  showAvailableMoves: 200,
+  aiAssistant: 600,
+};
