@@ -107,12 +107,12 @@ export const useGameStore = defineStore("game", () => {
     level.value = newLevel;
   };
 
-  const toggleShowMoves = () => {
-    showMoves.value = !showMoves.value;
+  const updateShowMoves = (newState: boolean) => {
+    showMoves.value = newState;
   };
 
-  const toggleAiBot = () => {
-    aiBot.value = !aiBot.value;
+  const updateAiBot = (newState: boolean) => {
+    aiBot.value = newState;
   };
 
   return {
@@ -154,7 +154,7 @@ export const useGameStore = defineStore("game", () => {
     setMoves,
     setCurrentMove,
     setLevel,
-    toggleShowMoves,
-    toggleAiBot,
+    updateShowMoves,
+    updateAiBot,
   };
 });

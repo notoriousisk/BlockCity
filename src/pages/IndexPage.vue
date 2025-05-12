@@ -1,18 +1,3 @@
-<script setup lang="ts">
-import AppPage from "@/components/AppPage.vue";
-import CityIcon from "@/assets/city.svg";
-import LogoIcon from "@/assets/logo.svg";
-import { useUserStore } from "@/stores/userStore";
-import { useNavbarStore } from "@/stores/navbarStore";
-
-const userStore = useUserStore();
-const navbarStore = useNavbarStore();
-
-const goToGame = () => {
-  navbarStore.setActiveTab("game");
-};
-</script>
-
 <template>
   <AppPage title="Home Page">
     <template #header>
@@ -28,9 +13,7 @@ const goToGame = () => {
     <div class="resource-bar">
       <div class="resource-card">
         <img src="@/assets/coin.png" class="resource-bar-icon" alt="Coin" />
-        <span class="resource-bar-value">{{
-          Math.floor(userStore.balance)
-        }}</span>
+        <span class="resource-bar-value">{{ Math.floor(balance) }}</span>
       </div>
       <div class="resource-card">
         <img
@@ -38,9 +21,7 @@ const goToGame = () => {
           class="resource-bar-icon"
           alt="Lightning"
         />
-        <span class="resource-bar-value"
-          >{{ Math.floor(userStore.energy) }}/100</span
-        >
+        <span class="resource-bar-value">{{ Math.floor(energy) }}/100</span>
       </div>
     </div>
     <!-- Play Button -->
@@ -49,6 +30,23 @@ const goToGame = () => {
     </div>
   </AppPage>
 </template>
+
+<script setup lang="ts">
+import { storeToRefs } from "pinia";
+import AppPage from "@/components/AppPage.vue";
+import CityIcon from "@/assets/city.svg";
+import LogoIcon from "@/assets/logo.svg";
+import { useUserStore } from "@/stores/userStore";
+import { useNavbarStore } from "@/stores/navbarStore";
+
+const userStore = useUserStore();
+const navbarStore = useNavbarStore();
+
+const { balance, energy } = storeToRefs(userStore);
+const goToGame = () => {
+  navbarStore.setActiveTab("game");
+};
+</script>
 
 <style scoped>
 .main {

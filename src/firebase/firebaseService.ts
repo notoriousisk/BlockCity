@@ -9,7 +9,7 @@ import {
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
-import type { GameBackendLevel, UserDoc } from "@/types";
+import type { GameBackendLevel, UserDoc, ActiveBoosts } from "@/types";
 import { ASSET_COSTS } from "@/types";
 
 // —— Levels: fetch all or one ——
@@ -144,28 +144,6 @@ export async function purchaseAsset(
   return true;
 }
 
-/** Spend an asset if user has it available */
-export async function spendAsset(
-  telegramId: string,
-  assetType: "showAvailableMoves" | "aiAssistant"
-): Promise<boolean> {
-  const userRef = doc(db, "users", telegramId);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) return false;
-  const data = snap.data() as UserDoc;
-
-  if (data.assets[assetType] <= 0) return false;
-
-  await updateDoc(userRef, {
-    assets: {
-      ...data.assets,
-      [assetType]: data.assets[assetType] - 1,
-    },
-  });
-
-  return true;
-}
-
 /** Refill energy to full if user has enough balance */
 export async function refillEnergy(telegramId: string): Promise<boolean> {
   const userRef = doc(db, "users", telegramId);
@@ -190,4 +168,59 @@ export async function refillEnergy(telegramId: string): Promise<boolean> {
   });
 
   return true;
+}
+
+/** Activate a boost for 60 seconds if user has the asset. */
+export async function activateBoost(
+  telegramId: string,
+  boostType: "showAvailableMoves" | "aiAssistant"
+): Promise<boolean> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return false;
+  const data = snap.data() as UserDoc;
+
+  // Check asset availability
+  if (!data.assets || data.assets[boostType] <= 0) return false;
+
+  // Set expiry 60 seconds from now
+  const now = Date.now();
+  const expiresAt = now + 60_000;
+  const newActiveBoosts = {
+    ...(data.activeBoosts || {}),
+    [boostType]: { expiresAt },
+  };
+
+  // Decrement asset and set boost
+  await updateDoc(userRef, {
+    assets: {
+      ...data.assets,
+      [boostType]: data.assets[boostType] - 1,
+    },
+    activeBoosts: newActiveBoosts,
+  });
+  return true;
+}
+
+/** Get currently active boosts (not expired). */
+export async function getActiveBoosts(
+  telegramId: string
+): Promise<ActiveBoosts> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return {};
+  const data = snap.data() as UserDoc;
+  const now = Date.now();
+  const boosts: ActiveBoosts = {};
+  if (data.activeBoosts) {
+    for (const key of Object.keys(
+      data.activeBoosts
+    ) as (keyof ActiveBoosts)[]) {
+      const boost = data.activeBoosts[key];
+      if (boost && boost.expiresAt > now) {
+        boosts[key] = boost;
+      }
+    }
+  }
+  return boosts;
 }

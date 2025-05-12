@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
 import { openToast } from "@/stores/toast";
 
-import type { UserDoc, Assets } from "@/types";
+import type { UserDoc, Assets, ActiveBoosts } from "@/types";
 
 import {
   initUser,
@@ -11,8 +11,8 @@ import {
   spendEnergy,
   completeLevel,
   purchaseAsset,
-  spendAsset,
   refillEnergy,
+  activateBoost,
 } from "@/firebase/firebaseService";
 
 export interface DisplayDataRow {
@@ -31,6 +31,7 @@ export const useUserStore = defineStore("user", () => {
   const balance = ref(0);
   const energy = ref(100); // Default energy value
   const assets = ref<Assets>({ showAvailableMoves: 0, aiAssistant: 0 });
+  const activeBoosts = ref<ActiveBoosts>({});
   const currentLevelId = ref(1);
   const numberOfRefs = ref(0);
   const referralMultiplier = ref(1);
@@ -51,6 +52,18 @@ export const useUserStore = defineStore("user", () => {
     return initDataRef.value?.user
       ? `https://t.me/your_bot?start=${initDataRef.value.user.id}`
       : "";
+  });
+
+  // Boost computed
+  const now = ref(Date.now());
+  setInterval(() => (now.value = Date.now()), 1000);
+  const isShowMovesActive = computed(() => {
+    const boost = activeBoosts.value?.showAvailableMoves;
+    return boost && boost.expiresAt > now.value;
+  });
+  const isAiAssistantActive = computed(() => {
+    const boost = activeBoosts.value?.aiAssistant;
+    return boost && boost.expiresAt > now.value;
   });
 
   // Helper functions
@@ -85,6 +98,7 @@ export const useUserStore = defineStore("user", () => {
       currentLevelId.value = data.currentLevelId;
       numberOfRefs.value = data.numberOfRefs;
       referralMultiplier.value = data.referralMultiplier;
+      activeBoosts.value = data.activeBoosts || {};
     });
 
     // Start interval to refresh energy in real-time
@@ -170,29 +184,6 @@ export const useUserStore = defineStore("user", () => {
     return success;
   }
 
-  async function spendAssetAction(
-    assetType: "showAvailableMoves" | "aiAssistant"
-  ) {
-    if (!userDoc.value) return false;
-    const success = await spendAsset(userDoc.value.telegramId, assetType);
-    if (success) {
-      openToast({
-        title: "Boost",
-        content: ` ${
-          assetType === "showAvailableMoves" ? "Hints" : "AI Assistant"
-        } activated`,
-        type: "warning",
-      });
-    } else {
-      openToast({
-        title: "Use Failed",
-        content: "You don't have this asset available",
-        type: "error",
-      });
-    }
-    return success;
-  }
-
   async function completeLevelAction(levelConfig: {
     id: number;
     reward: number;
@@ -229,6 +220,30 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  async function activateBoostAction(
+    boostType: "showAvailableMoves" | "aiAssistant"
+  ) {
+    if (!userDoc.value) return false;
+    const success = await activateBoost(userDoc.value.telegramId, boostType);
+    if (success) {
+      openToast({
+        title:
+          boostType === "showAvailableMoves"
+            ? "Hints Activated"
+            : "AI Assistant Activated",
+        content: "Boost will be active for 60 seconds.",
+        type: "success",
+      });
+    } else {
+      openToast({
+        title: "Activation Failed",
+        content: "You don't have this asset available.",
+        type: "error",
+      });
+    }
+    return success;
+  }
+
   // Clean up on unmount
   onUnmounted(() => {
     if (unsub.value) {
@@ -242,6 +257,7 @@ export const useUserStore = defineStore("user", () => {
     balance,
     energy,
     assets,
+    activeBoosts,
     currentLevelId,
     numberOfRefs,
     referralMultiplier,
@@ -252,14 +268,16 @@ export const useUserStore = defineStore("user", () => {
     userName,
     userUsername,
     referralCode,
+    isShowMovesActive,
+    isAiAssistantActive,
     // actions
     init,
     spendEnergyAction,
     refillEnergyAction,
     purchaseAssetAction,
-    spendAssetAction,
     completeLevelAction,
     copyReferralLink,
+    activateBoostAction,
     startEnergyRefreshInterval,
     stopEnergyRefreshInterval,
   };

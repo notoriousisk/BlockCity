@@ -20,6 +20,11 @@ export interface Assets {
   aiAssistant: number;
 }
 
+export interface ActiveBoosts {
+  showAvailableMoves?: { expiresAt: number };
+  aiAssistant?: { expiresAt: number };
+}
+
 export interface UserDoc {
   telegramId: string;
   walletAddress: string;
@@ -32,6 +37,7 @@ export interface UserDoc {
   lastEnergyUpdate: Timestamp;
   energyRefillRateMs: number;
   referredBy?: string | null;
+  activeBoosts?: ActiveBoosts;
 }
 
 export const ASSET_COSTS = {
