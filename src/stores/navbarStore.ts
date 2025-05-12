@@ -12,6 +12,13 @@ export const useNavbarStore = defineStore("navbar", () => {
     route.name as "home" | "shop" | "game" | "user"
   );
 
+  const tabColors = {
+    home: "#bbdff8",
+    shop: "#fffff",
+    game: "#1f94e9",
+    user: "#3b82f6",
+  };
+
   const navbarTabs = [
     { name: "home", label: "Home", icon: Home },
     { name: "shop", label: "Shop", icon: ShoppingBag },
@@ -22,6 +29,12 @@ export const useNavbarStore = defineStore("navbar", () => {
   const setActiveTab = (tab: string) => {
     activeTab.value = tab as "home" | "shop" | "game" | "user";
     router.push({ name: tab });
+
+    // @ts-expect-error exists
+    if (window.Telegram) {
+      // @ts-expect-error eee
+      window.Telegram.WebApp.setHeaderColor(tabColors[activeTab.value] ?? '#bbdff8');
+    }
   };
   return {
     navbarTabs,

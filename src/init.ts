@@ -4,7 +4,6 @@ import {
   initData,
   $debug,
   init as initSDK,
-  disableVerticalSwipes,
 } from "@telegram-apps/sdk-vue";
 
 /**
@@ -19,16 +18,14 @@ export function init(debug: boolean): void {
   initSDK();
 
   // Add Eruda if needed.
-  // if (debug) {
+  if (debug) {
     import("eruda").then((lib) => lib.default.init()).catch(console.error);
-  // }
+  }
 
   // Check if all required components are supported.
   if (!miniApp.isSupported()) {
     throw new Error("ERR_NOT_SUPPORTED");
   }
-
-  console.log("disableVerticalSwipes", disableVerticalSwipes);
 
   // Mount all components used in the project.
   miniApp.mount();
@@ -40,17 +37,5 @@ export function init(debug: boolean): void {
     })
     .then(() => {
       viewport.bindCssVars();
-    })
-    .finally(() => {
-      console.log("Viewport mounted", disableVerticalSwipes);
-      if (disableVerticalSwipes.isAvailable()) {
-        disableVerticalSwipes();
-        console.log("Vertical swipes disabled");
-      }
     });
-
-  if (disableVerticalSwipes.isAvailable()) {
-    disableVerticalSwipes();
-    console.log("Vertical swipes disabled");
-  }
 }

@@ -75,6 +75,12 @@ const {
 
 const { setActiveTab } = navbarStore;
 
+// @ts-expect-error exists
+if (window.Telegram) {
+  // @ts-expect-error eee
+  window.Telegram.WebApp.setHeaderColor("#ffffff");
+}
+
 // Type for the Match3Game component with its exposed methods
 interface GameRef {
   restartGame: () => void;

@@ -3,7 +3,6 @@ import "./assets/index.css";
 import { createApp } from "vue";
 import {
   retrieveLaunchParams,
-  disableVerticalSwipes,
 } from "@telegram-apps/sdk-vue";
 import { createPinia } from "pinia";
 
@@ -35,10 +34,6 @@ app.use(TonConnectUIPlugin, {
 });
 app.mount("#app");
 
-if (disableVerticalSwipes.isAvailable()) {
-  disableVerticalSwipes();
-}
-
 const userStore = useUserStore();
 userStore.init();
 
@@ -47,5 +42,5 @@ if (window.Telegram) {
   // @ts-expect-error eee
   window.Telegram.WebApp.setHeaderColor("#1f94e9");
   // @ts-expect-error exists
-  window.Telegram.WebApp.disableVerticalSwipes()
+  window.Telegram.WebApp.disableVerticalSwipes();
 }
