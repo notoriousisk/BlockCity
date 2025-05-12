@@ -8,7 +8,7 @@
       >
         <template v-if="isLoading">Loading...</template>
         <template v-else>
-          Next level {{ currentLevel?.index ?? "" }}
+          Level {{ currentLevel?.index ?? "" }}
           <span class="energy-label">
             -{{ currentLevel?.energyCost ?? 10 }}
             <ZapIcon />
@@ -58,7 +58,6 @@ const fetchUserLevelConfig = async () => {
 
 const goToNextLevel = async () => {
   if (currentLevel.value) {
-    await spendEnergyAction(0);
     if (energy.value < currentLevel.value.energyCost) {
       setActiveTab("user");
     } else {
@@ -132,11 +131,6 @@ body {
     width: 1.2em;
     height: 1.2em;
   }
-}
-
-.next-level-btn:hover {
-  background: #7bc0e0;
-  box-shadow: 0 12px 40px #8dccedcc, 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .loading-overlay {
