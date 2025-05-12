@@ -30,10 +30,9 @@ const { activeTab } = storeToRefs(navbarStore);
 .bottom-nav {
   bottom: 0;
   background-color: var(--color-primary);
-  border-top: 1px solid var(--color-border);
-  /* box-shadow: 0 -2px 4px var(--color-shadow); */
+  box-shadow: 0 -2px 20px 0 rgba(0, 0, 0, 0.6);
   z-index: 100;
-  padding: 10px 0;
+  padding: 10px 0 20px;
 }
 
 .nav-container {
@@ -61,6 +60,19 @@ const { activeTab } = storeToRefs(navbarStore);
 
 .nav-item.active {
   color: var(--color-surface);
+  position: relative;
+}
+
+.nav-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background-color: var(--color-surface);
+  border-radius: 2px;
 }
 
 .nav-item.active .icon {

@@ -126,7 +126,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
+
 import {
   BadgeDollarSign,
   Zap,
@@ -140,8 +140,8 @@ import {
 import AppPage from "@/components/AppPage.vue";
 import { useUserStore } from "@/stores/userStore";
 import { TonConnectButton, useTonWallet } from "@/tonconnect";
+import { useNavbarStore } from "@/stores/navbarStore";
 
-const router = useRouter();
 const isCopied = ref(false);
 const { wallet } = useTonWallet();
 
@@ -161,6 +161,8 @@ const {
 } = storeToRefs(userStore);
 
 const { copyReferralLink } = userStore;
+const navbarStore = useNavbarStore();
+const { setActiveTab } = navbarStore;
 
 const walletExtended = computed(() => {
   return wallet.value && "imageUrl" in wallet.value ? wallet.value : null;
@@ -176,7 +178,7 @@ const handleCopyReferral = async () => {
 };
 
 const navigateToShop = () => {
-  router.push("/shop");
+  setActiveTab("shop");
 };
 </script>
 

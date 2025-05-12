@@ -61,7 +61,6 @@ export function updateGame(
 
   if (gameState.value === gameStates.ready) {
     if (moves.length <= 0) {
-      console.log("No moves available, initiating reshuffle...");
       setReshuffling(true);
 
       // Reset user-initiated match flag for reshuffling
@@ -72,19 +71,11 @@ export function updateGame(
       const newMoves = findMoves(level, minMatchLength);
       setMoves(newMoves);
       // If still no moves after reshuffle, reshuffle again
-      let reshuffleCount = 1;
       while (newMoves.length <= 0) {
-        console.log(
-          `No moves after reshuffle #${reshuffleCount}, reshuffling again...`
-        );
         reshuffleBoard(level);
         const moreNewMoves = findMoves(level, minMatchLength);
         setMoves(moreNewMoves);
-        reshuffleCount++;
       }
-      console.log(
-        `Board successfully reshuffled after ${reshuffleCount} attempts`
-      );
 
       // Hide the reshuffling message after 1 second
       setTimeout(() => {

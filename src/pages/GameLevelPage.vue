@@ -56,12 +56,13 @@ import { storeToRefs } from "pinia";
 import Match3Game from "@/components/Match3Game.vue";
 import { useGameStore } from "@/stores/gameStore";
 import { useUserStore } from "@/stores/userStore";
-import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
+import { useNavbarStore } from "@/stores/navbarStore";
 
-const router = useRouter();
 const gameStore = useGameStore();
 const userStore = useUserStore();
+const navbarStore = useNavbarStore();
+
 const {
   score,
   movesLeft,
@@ -71,6 +72,8 @@ const {
   showMoves,
   aiBot,
 } = storeToRefs(gameStore);
+
+const { setActiveTab } = navbarStore;
 
 // Type for the Match3Game component with its exposed methods
 interface GameRef {
@@ -82,8 +85,8 @@ interface GameRef {
 const gameRef = ref<GameRef | null>(null);
 
 const goToGamePage = () => {
+  setActiveTab("game");
   gameStore.resetGame();
-  router.push("/game");
 };
 
 // Handler for level complete event

@@ -91,10 +91,7 @@ export async function spendEnergy(
   const elapsedMs = now.getTime() - last.getTime();
   const refill = Math.floor(elapsedMs / data.energyRefillRateMs);
   let newEnergy = data.energy + refill - cost;
-  console.log("refill", refill);
-  console.log("before", newEnergy);
   newEnergy = Math.max(0, Math.min(100, newEnergy));
-  console.log("after", newEnergy);
 
   await updateDoc(userRef, {
     energy: newEnergy,

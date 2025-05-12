@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import AppPage from "@/components/AppPage.vue";
-import AppLink from "@/components/AppLink.vue";
 import CityIcon from "@/assets/city.svg";
 import LogoIcon from "@/assets/logo.svg";
 import { BadgeDollarSign, Zap } from "lucide-vue-next";
 import { useUserStore } from "@/stores/userStore";
+import { useNavbarStore } from "@/stores/navbarStore";
 
 const userStore = useUserStore();
+const navbarStore = useNavbarStore();
+
+const goToGame = () => {
+  navbarStore.setActiveTab("game");
+};
 </script>
 
 <template>
@@ -30,7 +35,7 @@ const userStore = useUserStore();
           >
         </span>
       </div>
-      <AppLink class="game-button" :to="{ name: 'game' }">Play</AppLink>
+      <button class="game-button" @click="goToGame">Play</button>
     </div>
   </AppPage>
 </template>
@@ -127,6 +132,7 @@ const userStore = useUserStore();
 }
 
 .game-button {
+  all: unset;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,7 +145,7 @@ const userStore = useUserStore();
   transition: background-color 0.2s;
   font-size: 1.6rem;
   min-width: 180px;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   margin-bottom: 32px;
   font-family: "Montserrat", "Segoe UI", Arial, sans-serif;
 }

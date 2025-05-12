@@ -4,15 +4,17 @@
       <button
         class="next-level-btn"
         @click="goToNextLevel"
-        :disabled="!currentLevel"
+        :disabled="!currentLevel || isLoading"
       >
-        Next level {{ currentLevel?.index ?? "" }}
-        <span class="energy-label">
-          -{{ currentLevel?.energyCost ?? 10 }}
-          <ZapIcon />
-        </span>
+        <template v-if="isLoading">Loading...</template>
+        <template v-else>
+          Next level {{ currentLevel?.index ?? "" }}
+          <span class="energy-label">
+            -{{ currentLevel?.energyCost ?? 10 }}
+            <ZapIcon />
+          </span>
+        </template>
       </button>
-      <div v-if="isLoading" class="loading-overlay">Loading game data...</div>
     </div>
   </AppPage>
 </template>
@@ -25,7 +27,7 @@ import { storeToRefs } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
 import { useUserStore } from "@/stores/userStore";
 import { loadLevel } from "@/game/api";
-
+import { useNavbarStore } from "@/stores/navbarStore";
 const ZapIcon = Zap;
 const router = useRouter();
 const gameStore = useGameStore();
@@ -34,6 +36,10 @@ const { currentLevel } = storeToRefs(gameStore);
 const { currentLevelId, energy } = storeToRefs(userStore);
 const { spendEnergyAction } = userStore;
 const isLoading = ref(true);
+
+const navbarStore = useNavbarStore();
+
+const { setActiveTab } = navbarStore;
 
 // Fetch level config here instead of inside the Match3Game component
 const fetchUserLevelConfig = async () => {
@@ -53,9 +59,7 @@ const fetchUserLevelConfig = async () => {
 const goToNextLevel = async () => {
   if (currentLevel.value) {
     if (energy.value < currentLevel.value.energyCost) {
-      router.push({
-        name: "UserPage",
-      });
+      setActiveTab("user");
     }
     // Pass the level config via router navigation
     await spendEnergyAction(currentLevel.value.energyCost);
@@ -81,18 +85,16 @@ onMounted(async () => {
 html,
 body,
 .game-bg-inner {
-  height: 100vh;
-  min-height: 100vh;
+  height: 100%;
   overflow: hidden;
 }
 body {
   overflow: hidden !important;
 }
 .game-bg-inner {
-  min-height: 100vh;
-  min-width: 100vw;
   background: url("@/assets/blockcity_background.webp") no-repeat top center;
-  background-size: cover;
+  background-color: #27ba8a;
+  background-size: contain;
   position: relative;
 }
 .next-level-btn {
@@ -109,10 +111,9 @@ body {
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(33, 150, 243, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1),
-    0 4px 24px #8dcced99;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  z-index: 1000;
+  z-index: 3;
   display: flex;
   align-items: center;
   gap: 24px;
