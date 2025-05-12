@@ -6,6 +6,7 @@ import {
   $debug,
   init as initSDK,
   disableVerticalSwipes,
+  isVerticalSwipesEnabled,
 } from "@telegram-apps/sdk-vue";
 
 /**
@@ -19,9 +20,11 @@ export function init(debug: boolean): void {
   // Also, configure the package.
   initSDK();
 
+  alert("vertical " + isVerticalSwipesEnabled() + ' ' + disableVerticalSwipes.isAvailable());
   if (disableVerticalSwipes.isAvailable()) {
     disableVerticalSwipes();
   }
+
   // Add Eruda if needed.
   if (debug) {
     import("eruda").then((lib) => lib.default.init()).catch(console.error);
