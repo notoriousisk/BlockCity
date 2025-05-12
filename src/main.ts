@@ -42,13 +42,10 @@ if (disableVerticalSwipes.isAvailable()) {
 const userStore = useUserStore();
 userStore.init();
 
-// @ts-expect-error eee
+// @ts-expect-error exists
 if (window.Telegram) {
   // @ts-expect-error eee
-  window.Telegram.WebApp.setHeaderColor("#191b33");
-  // @ts-expect-error eee
-  window.Telegram.WebApp.setHeaderParams({
-    color: "#191b33",
-    textColor: "#ffffff",
-  });
+  window.Telegram.WebApp.setHeaderColor("#1f94e9");
+  // @ts-expect-error exists
+  window.Telegram.WebApp.disableVerticalSwipes()
 }
