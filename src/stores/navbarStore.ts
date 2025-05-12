@@ -14,7 +14,7 @@ export const useNavbarStore = defineStore("navbar", () => {
 
   const tabColors = {
     home: "#bbdff8",
-    shop: "#fffff",
+    shop: "#3b82f6",
     game: "#1f94e9",
     user: "#3b82f6",
   };
