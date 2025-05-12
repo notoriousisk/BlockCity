@@ -63,7 +63,7 @@ const goToGame = () => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 28px 0 0 0;
+  padding: 0;
   background-color: #bbdff8;
 }
 .resource-bar {
