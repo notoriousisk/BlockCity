@@ -134,7 +134,6 @@ onMounted(() => {
 <style scoped>
 .game-page {
   position: relative;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: top;
