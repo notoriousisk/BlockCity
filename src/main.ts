@@ -40,7 +40,7 @@ userStore.init();
 // @ts-expect-error exists
 if (window.Telegram) {
   // @ts-expect-error eee
-  window.Telegram.WebApp.setHeaderColor("#1f94e9");
+  window.Telegram.WebApp.setHeaderColor("#bbdff8");
   // @ts-expect-error exists
   window.Telegram.WebApp.disableVerticalSwipes();
 }
