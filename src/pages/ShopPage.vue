@@ -157,7 +157,7 @@ const handlePurchaseAsset = async (
   font-size: 2.2rem;
   font-weight: 800;
   text-align: center;
-  padding: 28px 0 18px 0;
+  padding: 0 0 18px 0;
   letter-spacing: 0.04em;
   box-shadow: 0 2px 8px var(--color-card-shadow);
 }
