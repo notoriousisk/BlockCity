@@ -59,7 +59,7 @@ watch(activeToast, (newToast) => {
 }
 
 .toast--default {
-  width: 90%;
+  width: 80%;
   max-width: 800px;
 }
 
