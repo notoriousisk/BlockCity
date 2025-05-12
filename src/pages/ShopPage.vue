@@ -22,7 +22,7 @@
     <!-- Shop Items -->
     <div class="shop-list">
       <!-- Refill Energy -->
-      <div class="shop-card">
+      <div class="shop-card" :class="{ pulsate: energy < 10 }">
         <div class="shop-card-icon shop-card-icon-bg">
           <img src="@/assets/battery.png" alt="Battery" />
         </div>
@@ -268,5 +268,24 @@ const handlePurchaseAsset = async (
   background: var(--color-button-primary-hover);
   color: var(--color-button-text);
   cursor: not-allowed;
+}
+.pulsate {
+  animation: pulsate 1.2s infinite;
+  box-shadow: 0 0 0 0 var(--color-primary-light),
+    0 1px 4px var(--color-card-shadow);
+}
+@keyframes pulsate {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-primary-light),
+      0 1px 4px var(--color-card-shadow);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(59, 130, 246, 0.15),
+      0 1px 4px var(--color-card-shadow);
+  }
+  100% {
+    box-shadow: 0 0 0 0 var(--color-primary-light),
+      0 1px 4px var(--color-card-shadow);
+  }
 }
 </style>

@@ -59,7 +59,7 @@ const fetchUserLevelConfig = async () => {
 const goToNextLevel = async () => {
   if (currentLevel.value) {
     if (energy.value < currentLevel.value.energyCost) {
-      setActiveTab("user");
+      setActiveTab("shop");
     } else {
       // Pass the level config via router navigation
       await spendEnergyAction(currentLevel.value.energyCost);
