@@ -9,6 +9,9 @@ import {
   onUserDataChange,
   spendEnergy,
   completeLevel,
+  purchaseAsset,
+  spendAsset,
+  refillEnergy,
 } from "@/firebase/firebaseService";
 
 export interface DisplayDataRow {
@@ -117,6 +120,28 @@ export const useUserStore = defineStore("user", () => {
     energy.value = newEnergy;
   }
 
+  async function refillEnergyAction() {
+    if (!userDoc.value) return false;
+    const success = await refillEnergy(userDoc.value.telegramId);
+    return success;
+  }
+
+  async function purchaseAssetAction(
+    assetType: "showAvailableMoves" | "aiAssistant"
+  ) {
+    if (!userDoc.value) return false;
+    const success = await purchaseAsset(userDoc.value.telegramId, assetType);
+    return success;
+  }
+
+  async function spendAssetAction(
+    assetType: "showAvailableMoves" | "aiAssistant"
+  ) {
+    if (!userDoc.value) return false;
+    const success = await spendAsset(userDoc.value.telegramId, assetType);
+    return success;
+  }
+
   async function completeLevelAction(levelConfig: {
     id: number;
     reward: number;
@@ -165,6 +190,9 @@ export const useUserStore = defineStore("user", () => {
     // actions
     init,
     spendEnergyAction,
+    refillEnergyAction,
+    purchaseAssetAction,
+    spendAssetAction,
     completeLevelAction,
     copyReferralLink,
     startEnergyRefreshInterval,

@@ -118,3 +118,80 @@ export async function completeLevel(
     });
   }
 }
+
+/** Purchase an asset if user has enough balance */
+export async function purchaseAsset(
+  telegramId: string,
+  assetType: "showAvailableMoves" | "aiAssistant"
+): Promise<boolean> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return false;
+  const data = snap.data() as UserDoc;
+
+  const costs = {
+    showAvailableMoves: 200,
+    aiAssistant: 600,
+  };
+
+  const cost = costs[assetType];
+  if (data.balance < cost) return false;
+
+  await updateDoc(userRef, {
+    balance: data.balance - cost,
+    assets: {
+      ...data.assets,
+      [assetType]: data.assets[assetType] + 1,
+    },
+  });
+
+  return true;
+}
+
+/** Spend an asset if user has it available */
+export async function spendAsset(
+  telegramId: string,
+  assetType: "showAvailableMoves" | "aiAssistant"
+): Promise<boolean> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return false;
+  const data = snap.data() as UserDoc;
+
+  if (data.assets[assetType] <= 0) return false;
+
+  await updateDoc(userRef, {
+    assets: {
+      ...data.assets,
+      [assetType]: data.assets[assetType] - 1,
+    },
+  });
+
+  return true;
+}
+
+/** Refill energy to full if user has enough balance */
+export async function refillEnergy(telegramId: string): Promise<boolean> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return false;
+  const data = snap.data() as UserDoc;
+
+  const costPerEnergy = 3;
+  const energyNeeded = 100 - data.energy;
+
+  // If already at full energy, return true
+  if (energyNeeded <= 0) return true;
+
+  const totalCost = energyNeeded * costPerEnergy;
+
+  if (data.balance < totalCost) return false;
+
+  await updateDoc(userRef, {
+    balance: data.balance - totalCost,
+    energy: 100, // Set to full energy
+    lastEnergyUpdate: serverTimestamp(),
+  });
+
+  return true;
+}
