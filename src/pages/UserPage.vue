@@ -1,11 +1,14 @@
 <template>
   <AppPage title="Profile">
+    <template #header>
+      <div class="user-header">PROFILE</div>
+    </template>
     <div v-if="!userRows" class="error-message">
       Application was launched with missing init data
     </div>
     <template v-else>
-      <!-- User Profile Block -->
-      <div class="profile-block">
+      <!-- Profile Card -->
+      <div class="profile-card">
         <div class="profile-header">
           <div class="profile-photo-container">
             <img
@@ -30,54 +33,53 @@
           </div>
         </div>
       </div>
-
-      <!-- Balance Block -->
-      <div class="balance-block">
-        <h3>Resources</h3>
-        <div class="resources-container">
-          <div class="resource-item">
-            <div class="resource-header">
-              <BadgeDollarSign class="resource-icon" />
-              <span class="resource-label">Balance</span>
-            </div>
-            <span class="resource-value">{{ Math.floor(balance) }} $</span>
-          </div>
-          <div class="resource-item">
-            <div class="resource-header">
-              <Zap class="resource-icon" />
-              <span class="resource-label">Energy</span>
-            </div>
-            <span class="resource-value">{{ energy }}/100</span>
-          </div>
+      <!-- Resource Bar -->
+      <div class="resource-bar">
+        <div class="resource-card">
+          <img src="@/assets/coin.png" class="resource-bar-icon" alt="Coin" />
+          <span class="resource-bar-value">{{ Math.floor(balance) }}</span>
+        </div>
+        <div class="resource-card">
+          <img
+            src="@/assets/lightning.png"
+            class="resource-bar-icon"
+            alt="Lightning"
+          />
+          <span class="resource-bar-value">{{ energy }}/100</span>
         </div>
       </div>
-
-      <!-- Assets Block -->
-      <div class="assets-block">
-        <h3>Assets</h3>
-        <div class="asset-item">
-          <div class="asset-header">
-            <BringToFront class="asset-icon" />
-            <span class="asset-name">Hints for 60 sec</span>
+      <!-- Assets Card -->
+      <div class="user-card">
+        <div class="user-card-title">Assets</div>
+        <div class="asset-list">
+          <div class="asset-item">
+            <div class="asset-icon-bg">
+              <img src="@/assets/smart.png" alt="Smart" />
+            </div>
+            <div class="asset-info">
+              <div class="asset-name">Hints for 60 sec</div>
+              <div class="asset-amount">x{{ assets.showAvailableMoves }}</div>
+            </div>
           </div>
-          <span class="asset-amount">{{ assets.showAvailableMoves }}</span>
-        </div>
-        <div class="asset-item">
-          <div class="asset-header">
-            <Bot class="asset-icon" />
-            <span class="asset-name">AI Assistant for 60 sec</span>
+          <div class="asset-item">
+            <div class="asset-icon-bg">
+              <img src="@/assets/robot.png" alt="Robot" />
+            </div>
+            <div class="asset-info">
+              <div class="asset-name">AI Assistant for 60 sec</div>
+              <div class="asset-amount">x{{ assets.aiAssistant }}</div>
+            </div>
           </div>
-          <span class="asset-amount">{{ assets.aiAssistant }}</span>
         </div>
         <button @click="navigateToShop" class="shop-button">
-          <ShoppingCart class="shop-icon" />
+          <img src="@/assets/coin.png" class="shop-icon" alt="Shop" />
           Shop
         </button>
       </div>
 
-      <!-- Referral Block -->
-      <div class="referral-block">
-        <h3>Referral Link</h3>
+      <!-- Referral Card -->
+      <div class="user-card">
+        <div class="user-card-title">Referral Link</div>
         <div class="referral-multiplier">
           <div class="multiplier-label">Current Referral Multiplier:</div>
           <div class="multiplier-value">{{ referralMultiplier }}x</div>
@@ -100,7 +102,8 @@
       </div>
 
       <!-- TON Connect Button -->
-      <div class="ton-connect-section">
+      <div class="user-card">
+        <div class="user-card-title">Wallet</div>
         <div v-if="walletExtended" class="wallet-info">
           <img
             class="wallet-image"
@@ -128,17 +131,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
-
-import {
-  BadgeDollarSign,
-  Zap,
-  BringToFront,
-  User,
-  Star,
-  Bot,
-  ShoppingCart,
-} from "lucide-vue-next";
-
+import { User, Star } from "lucide-vue-next";
 import AppPage from "@/components/AppPage.vue";
 import { useUserStore } from "@/stores/userStore";
 import { TonConnectButton, useTonWallet } from "@/tonconnect";
@@ -147,7 +140,6 @@ import { useNavbarStore } from "@/stores/navbarStore";
 const isCopied = ref(false);
 const { wallet } = useTonWallet();
 
-// Destructure values from userStore
 const userStore = useUserStore();
 const {
   userRows,
@@ -170,13 +162,12 @@ const walletExtended = computed(() => {
   return wallet.value && "imageUrl" in wallet.value ? wallet.value : null;
 });
 
-// Handlers
 const handleCopyReferral = async () => {
   await copyReferralLink();
   isCopied.value = true;
   setTimeout(() => {
     isCopied.value = false;
-  }, 2000); // Reset after 2 seconds
+  }, 2000);
 };
 
 const navigateToShop = () => {
@@ -185,21 +176,59 @@ const navigateToShop = () => {
 </script>
 
 <style scoped>
-.profile-block {
-  background-color: var(--color-card-bg);
-  border: 1px solid var(--color-card-border);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 4px var(--color-card-shadow);
+.user-header {
+  width: 100vw;
+  max-width: 100%;
+  background: var(--color-primary);
+  color: var(--color-button-text);
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 28px 0 18px 0;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px var(--color-card-shadow);
+  margin-bottom: 18px;
 }
-
+.resource-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 32px 0;
+}
+.resource-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 1px 4px var(--color-card-shadow);
+  padding: 18px 24px;
+  font-weight: 600;
+  font-size: 1.25rem;
+  gap: 12px;
+  border: 1.5px solid var(--color-card-border);
+}
+.resource-bar-icon {
+  width: 32px;
+  height: 32px;
+}
+.resource-bar-value {
+  font-size: 1.3rem;
+  color: var(--color-text-primary);
+}
+.profile-card {
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  box-shadow: 0 1px 4px var(--color-card-shadow);
+  padding: 24px 20px;
+  margin-bottom: 20px;
+  border: 1.5px solid var(--color-card-border);
+}
 .profile-header {
   display: flex;
   align-items: center;
   gap: 20px;
 }
-
 .profile-photo-container {
   width: 88px;
   height: 88px;
@@ -212,49 +241,41 @@ const navigateToShop = () => {
   background-color: var(--color-light);
   overflow: hidden;
 }
-
 .profile-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .profile-icon {
   width: 48px;
   height: 48px;
   color: var(--color-text-secondary);
   stroke-width: 1.5;
 }
-
 .profile-info {
   flex: 1;
 }
-
 .name-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .username-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .profile-name {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--color-text-primary);
 }
-
 .profile-username {
   margin: 4px 0 0;
   color: var(--color-text-secondary);
   font-size: 1.1rem;
 }
-
 .premium-star {
   width: 24px;
   height: 24px;
@@ -263,7 +284,6 @@ const navigateToShop = () => {
   filter: drop-shadow(0 0 4px var(--color-accent));
   animation: glow 2s ease-in-out infinite;
 }
-
 .premium-badge {
   background-color: var(--color-accent-light);
   color: var(--color-accent);
@@ -272,7 +292,6 @@ const navigateToShop = () => {
   font-size: 0.8rem;
   font-weight: 600;
 }
-
 @keyframes glow {
   0%,
   100% {
@@ -282,244 +301,60 @@ const navigateToShop = () => {
     filter: drop-shadow(0 0 8px var(--color-accent));
   }
 }
-
-.balance-block,
-.assets-block,
-.referral-block {
-  background-color: var(--color-card-bg);
-  border: 1px solid var(--color-card-border);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 4px var(--color-card-shadow);
+.user-card {
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  box-shadow: 0 1px 4px var(--color-card-shadow);
+  padding: 24px 20px;
+  margin-bottom: 20px;
+  border: 1.5px solid var(--color-card-border);
 }
-
-h3 {
-  margin: 0 0 16px;
-  color: var(--color-text-primary);
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.resources-container {
-  display: flex;
-  gap: 24px;
-}
-
-.resource-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  background-color: var(--color-light);
-  border-radius: 12px;
-}
-
-.resource-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.resource-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
-  stroke-width: 2.5;
-}
-
-.resource-label {
-  color: var(--color-text-secondary);
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-
-.resource-value {
-  font-size: 1.75rem;
+.user-card-title {
+  font-size: 1.18rem;
   font-weight: 700;
   color: var(--color-text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  margin-bottom: 12px;
 }
-
-.resource-item:nth-child(1) .resource-value {
-  color: var(--color-balance);
+.asset-list {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 12px;
 }
-
-.resource-item:nth-child(2) .resource-value {
-  color: var(--color-energy);
-}
-
-.resource-item:nth-child(1) .resource-icon {
-  color: var(--color-balance);
-}
-
-.resource-item:nth-child(2) .resource-icon {
-  color: var(--color-energy);
-}
-
 .asset-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background-color: var(--color-light);
-  border-radius: 12px;
-  margin-bottom: 8px;
+  gap: 12px;
+  background: var(--color-light);
+  border-radius: 14px;
+  padding: 12px 18px;
+  flex: 1;
 }
-
-.asset-item:last-child {
-  margin-bottom: 0;
-}
-
-.asset-header {
+.asset-icon-bg {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--color-primary-light);
 }
-
+.asset-icon-bg img {
+  width: 24px;
+  height: 24px;
+}
+.asset-info {
+  flex: 1;
+}
 .asset-name {
+  font-weight: 600;
   color: var(--color-text-primary);
-  font-weight: 500;
+  font-size: 1.05rem;
 }
-
 .asset-amount {
   font-weight: 700;
   color: var(--color-asset);
-}
-
-.asset-icon {
-  color: var(--color-asset);
-}
-
-.referral-multiplier {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background-color: var(--color-light);
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
-
-.multiplier-label {
-  color: var(--color-text-secondary);
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.multiplier-value {
-  font-weight: 700;
-  color: var(--color-accent);
-  font-size: 1.25rem;
-}
-
-.referral-link-container {
-  display: flex;
-  gap: 12px;
-}
-
-.referral-input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  background-color: var(--color-light);
-  color: var(--color-text-primary);
-  font-size: 0.95rem;
-  transition: border-color 0.2s;
-}
-
-.referral-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.copy-button {
-  padding: 12px 20px;
-  background-color: var(--color-button-primary);
-  color: var(--color-button-text);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-}
-
-.copy-button:hover {
-  background-color: var(--color-button-primary-hover);
-}
-
-.copy-button.copied {
-  background-color: var(--color-success);
-}
-
-.ton-connect-section {
-  background-color: var(--color-card-bg);
-  border: 1px solid var(--color-card-border);
-  border-radius: 16px;
-  padding: 24px;
-  margin-top: 24px;
-  box-shadow: 0 2px 4px var(--color-card-shadow);
-}
-
-.wallet-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 16px;
-  background-color: var(--color-light);
-  border-radius: 12px;
-}
-
-.wallet-image {
-  border-radius: 8px;
-}
-
-.wallet-meta {
-  flex: 1;
-}
-
-.wallet-name {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-.wallet-app-name {
-  opacity: 0.6;
-  font-weight: 400;
-  font-size: 0.9rem;
-}
-
-.wallet-address {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  word-break: break-all;
-}
-
-.ton-connect-button-container {
-  display: flex;
-  justify-content: center;
-}
-
-.error-message {
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding: 24px;
-  background-color: var(--color-light);
-  border-radius: 12px;
   font-size: 1.1rem;
 }
-
 .shop-button {
   display: flex;
   align-items: center;
@@ -537,13 +372,109 @@ h3 {
   font-size: 1rem;
   transition: all 0.2s;
 }
-
 .shop-button:hover {
   background-color: var(--color-button-primary-hover);
 }
-
 .shop-icon {
   width: 20px;
   height: 20px;
+}
+.referral-multiplier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: var(--color-light);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.multiplier-label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.multiplier-value {
+  font-weight: 700;
+  color: var(--color-accent);
+  font-size: 1.25rem;
+}
+.referral-link-container {
+  display: flex;
+  gap: 12px;
+}
+.referral-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background-color: var(--color-light);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+.referral-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+.copy-button {
+  padding: 12px 20px;
+  background-color: var(--color-button-primary);
+  color: var(--color-button-text);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+.copy-button:hover {
+  background-color: var(--color-button-primary-hover);
+}
+.copy-button.copied {
+  background-color: var(--color-success);
+}
+.ton-connect-button-container {
+  display: flex;
+  justify-content: center;
+}
+.wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: var(--color-light);
+  border-radius: 12px;
+}
+.wallet-image {
+  border-radius: 8px;
+}
+.wallet-meta {
+  flex: 1;
+}
+.wallet-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+.wallet-app-name {
+  opacity: 0.6;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+.wallet-address {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  word-break: break-all;
+}
+.error-message {
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 24px;
+  background-color: var(--color-light);
+  border-radius: 12px;
+  font-size: 1.1rem;
 }
 </style>
