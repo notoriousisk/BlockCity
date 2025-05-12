@@ -22,7 +22,9 @@
               <Star v-if="user?.isPremium" class="premium-star" />
             </div>
             <div class="username-container">
-              <p class="profile-username">@{{ userUsername }}</p>
+              <p class="profile-username" v-if="userUsername">
+                @{{ userUsername }}
+              </p>
               <span v-if="user?.isPremium" class="premium-badge">Premium</span>
             </div>
           </div>
