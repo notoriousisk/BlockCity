@@ -124,19 +124,6 @@ const init = async () => {
   );
 };
 
-// Expose method for parent component to restart game
-const restartGame = () => {
-  gameStore.resetGame();
-  newGame(
-    level.value,
-    props.levelConfig.grid,
-    gameState,
-    gameStore.setReshuffling,
-    gameStore.setClusters,
-    gameStore.setMoves
-  );
-};
-
 // Method to refresh moves
 const refreshMoves = () => {
   const newMoves = findMoves(level.value, minMatchLength.value);
@@ -264,7 +251,6 @@ const onMouseOut = () => {
 
 // Expose methods to parent component
 defineExpose({
-  restartGame,
   refreshMoves,
 });
 

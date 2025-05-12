@@ -44,7 +44,8 @@ export const useGameStore = defineStore("game", () => {
   // Actions
   const resetGame = () => {
     score.value = 0;
-    movesLeft.value = currentLevel.value.movesLimit;
+    movesLeft.value = currentLevel.value?.movesLimit ?? 3;
+    currentLevel.value = undefined;
     gameOver.value = false;
     gameResult.value = null;
     isReshuffling.value = false;

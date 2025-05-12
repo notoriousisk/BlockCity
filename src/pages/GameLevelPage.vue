@@ -25,20 +25,23 @@
       />
 
       <div class="game-controls">
-        <button class="control-button" @click="handleNewGame">New Game</button>
         <button
           class="control-button"
           @click="toggleShowMoves"
           :disabled="gameOver"
+          aria-label="Show Hints"
         >
-          {{ showMoves ? "Hide" : "Show" }} Moves
+          <img :src="SmartIcon" alt="Hints" class="control-icon" />
+          <span class="asset-count">{{ assets.showAvailableMoves }}</span>
         </button>
         <button
           class="control-button"
           @click="toggleAiBot"
           :disabled="gameOver"
+          aria-label="AI Assistant"
         >
-          {{ aiBot ? "Disable" : "Enable" }} AI Bot
+          <img :src="RobotIcon" alt="AI Assistant" class="control-icon" />
+          <span class="asset-count">{{ assets.aiAssistant }}</span>
         </button>
       </div>
     </div>
@@ -58,21 +61,17 @@ import { useGameStore } from "@/stores/gameStore";
 import { useUserStore } from "@/stores/userStore";
 import { onMounted, ref } from "vue";
 import { useNavbarStore } from "@/stores/navbarStore";
+import SmartIcon from "@/assets/smart.png";
+import RobotIcon from "@/assets/robot.png";
 
 const gameStore = useGameStore();
 const userStore = useUserStore();
 const navbarStore = useNavbarStore();
 
-const {
-  score,
-  movesLeft,
-  requiredScore,
-  currentLevel,
-  gameOver,
-  showMoves,
-  aiBot,
-} = storeToRefs(gameStore);
+const { score, movesLeft, requiredScore, currentLevel, gameOver, showMoves } =
+  storeToRefs(gameStore);
 
+const { assets } = storeToRefs(userStore);
 const { setActiveTab } = navbarStore;
 
 // @ts-expect-error exists
@@ -83,7 +82,6 @@ if (window.Telegram) {
 
 // Type for the Match3Game component with its exposed methods
 interface GameRef {
-  restartGame: () => void;
   refreshMoves: () => void;
 }
 
@@ -107,13 +105,6 @@ const handleLevelComplete = (levelConfig: { id: number; reward?: number }) => {
   setTimeout(() => {
     goToGamePage();
   }, 3000);
-};
-
-// Button handlers
-const handleNewGame = () => {
-  if (gameRef.value) {
-    gameRef.value.restartGame();
-  }
 };
 
 const toggleShowMoves = () => {
@@ -220,7 +211,7 @@ onMounted(() => {
 
 .game-controls {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   gap: 12px;
   margin-top: 16px;
 }
@@ -235,6 +226,9 @@ onMounted(() => {
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-button:hover {
@@ -244,5 +238,21 @@ onMounted(() => {
 .control-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.control-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.asset-count {
+  margin-left: 7px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-light);
+  min-width: 18px;
+  text-align: center;
+  display: inline-block;
 }
 </style>
