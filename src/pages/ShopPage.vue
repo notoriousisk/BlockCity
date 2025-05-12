@@ -149,8 +149,9 @@ const handlePurchaseAsset = async (
 
 <style scoped>
 .shop-header {
-  width: 100vw;
-  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
   background: var(--color-primary);
   color: var(--color-button-text);
   font-size: 2.2rem;
@@ -159,7 +160,6 @@ const handlePurchaseAsset = async (
   padding: 28px 0 18px 0;
   letter-spacing: 0.04em;
   box-shadow: 0 2px 8px var(--color-card-shadow);
-  margin-bottom: 18px;
 }
 
 .resource-bar {
