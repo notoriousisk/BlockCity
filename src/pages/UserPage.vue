@@ -50,7 +50,7 @@
       </div>
       <!-- Assets Card -->
       <div class="user-card">
-        <div class="user-card-title">Assets</div>
+        <div class="user-card-title">Boosts</div>
         <div class="asset-list">
           <div class="asset-item">
             <div class="asset-icon-bg">
