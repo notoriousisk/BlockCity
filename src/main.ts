@@ -16,7 +16,10 @@ import { useUserStore } from "@/stores/userStore";
 import "./mockEnv";
 
 // Configure all application dependencies.
-init(retrieveLaunchParams().startParam === "debug" || import.meta.env.DEV);
+init(
+  retrieveLaunchParams().startParam === "debug" ||
+    import.meta.env.VITE_DEV_DEBUG === "true"
+);
 
 const app = createApp(App);
 const pinia = createPinia();

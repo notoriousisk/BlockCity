@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAMU74e30_HpfUrE9jMwQflGbif_b2NlmQ",
-  authDomain: "gamified-defi.firebaseapp.com",
-  projectId: "gamified-defi",
-  storageBucket: "gamified-defi.firebasestorage.app",
-  messagingSenderId: "257874942655",
-  appId: "1:257874942655:web:8fbdb9858ea5f540ac840a",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
