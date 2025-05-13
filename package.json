@@ -27,6 +27,7 @@
     "firebase-admin": "^13.3.0",
     "lucide-vue-next": "^0.487.0",
     "pinia": "^3.0.2",
+    "tonweb": "^0.0.66",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
   },

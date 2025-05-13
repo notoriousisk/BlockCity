@@ -1,11 +1,11 @@
-import { TonClient } from "@ton/ton";
-import { Address } from "@ton/core";
-import { useTonWallet } from "./useTonWallet";
 import { ref, computed, watch } from "vue";
+import { TonClient } from "@ton/ton";
+import { Address as TonClientAddress } from "@ton/core";
+import { useTonWallet } from "./useTonWallet";
+import TonWeb from "tonweb";
 
-// Create a TON client with a public endpoint
+// -- TON client (native coin) setup --
 let tonClient: TonClient;
-
 try {
   tonClient = new TonClient({
     endpoint: "https://toncenter.com/api/v2/jsonRPC",
@@ -14,81 +14,144 @@ try {
   console.error("Failed to initialize TON client:", error);
 }
 
-// Create a shared reactive state for TON balance
+// -- Reactive state for TON balance --
 const tonBalance = ref<string>("0");
-const isBalanceLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
+const isTonLoading = ref(false);
+const hasTonError = ref(false);
+const tonErrorMessage = ref("");
+
+// -- Reactive state for Jetton balance --
+const jettonBalance = ref<string>("0");
+const jettonSymbol = ref<string>(""); // e.g. "MYTKN"
+const isJettonLoading = ref(false);
+const hasJettonError = ref(false);
+const jettonErrorMessage = ref("");
+
+// -- TonWeb setup for Jetton --
+const tonweb = new TonWeb(
+  new TonWeb.HttpProvider("https://toncenter.com/api/v2/jsonRPC")
+);
+const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
+const { Address: TonWebAddress } = TonWeb.utils;
+
+// Replace with your on-chain Jetton master address:
+const JETTON_MASTER = "EQCAT2BrlVj_Df-YqLcZYc_kg5sFSZ3o7L0yXrRB94lv__6G";
 
 /**
- * Get TON balance for the connected wallet
- * @returns A reactive object with balance information
+ * Fetch native TON balance.
+ */
+async function fetchTonBalance(walletAddress: string) {
+  hasTonError.value = false;
+  tonErrorMessage.value = "";
+  if (!walletAddress || !tonClient) {
+    tonBalance.value = "0";
+    return;
+  }
+  try {
+    isTonLoading.value = true;
+    const raw = await tonClient.getBalance(
+      TonClientAddress.parse(walletAddress)
+    );
+    const ton = Number(raw) / 1e9;
+    tonBalance.value = ton.toFixed(4);
+  } catch (e) {
+    console.error("Error fetching TON balance:", e);
+    hasTonError.value = true;
+    tonErrorMessage.value = "Failed to fetch TON balance";
+    tonBalance.value = "0";
+  } finally {
+    isTonLoading.value = false;
+  }
+}
+
+/**
+ * Fetch Jetton balance (and symbol) for the given owner wallet.
+ * Uses TonWeb.token.jetton.JettonMinter and JettonWallet :contentReference[oaicite:1]{index=1}.
+ */
+async function fetchJettonBalance(ownerAddress: string) {
+  hasJettonError.value = false;
+  jettonErrorMessage.value = "";
+  if (!ownerAddress) {
+    jettonBalance.value = "0";
+    return;
+  }
+  try {
+    isJettonLoading.value = true;
+
+    // 1. Create a JettonMinter wrapper
+    const minter = new JettonMinter(tonweb.provider, {
+      address: new TonWebAddress(JETTON_MASTER),
+    });
+
+    // 2. Get token metadata (name, symbol, decimals)
+    const meta = await minter.getJettonData();
+    jettonSymbol.value = meta.tokenWalletCode.toString();
+
+    // 3. Derive the user’s Jetton‐wallet address
+    const walletAddr = await minter.getJettonWalletAddress(
+      new TonWebAddress(ownerAddress)
+    );
+
+    // 4. Create a JettonWallet wrapper and fetch its data
+    const wallet = new JettonWallet(tonweb.provider, {
+      address: walletAddr,
+    });
+    const data = await wallet.getData();
+
+    // 5. Format balance using decimals
+    const raw = data.balance.toString(); // big integer as string
+    const human = Number(raw) / 10 ** 9;
+    jettonBalance.value = human.toFixed(4);
+  } catch (e) {
+    console.error("Error fetching Jetton balance:", e);
+    hasJettonError.value = true;
+    jettonErrorMessage.value = "Failed to fetch Jetton balance";
+    jettonBalance.value = "0";
+  } finally {
+    isJettonLoading.value = false;
+  }
+}
+
+/**
+ * Vue hook combining both balances.
  */
 export function useTonBalance() {
   const { wallet } = useTonWallet();
 
-  // Formatted balance with TON symbol
-  const formattedBalance = computed(() => {
-    return `${tonBalance.value} TON`;
-  });
+  const formattedBalance = computed(() => `${tonBalance.value} TON`);
+  const formattedJettonBalance = computed(() =>
+    jettonSymbol.value
+      ? `${jettonBalance.value} ${jettonSymbol.value}`
+      : `${jettonBalance.value}`
+  );
 
-  /**
-   * Manually fetch wallet balance
-   */
-  const fetchWalletBalance = async () => {
-    // Reset error state
-    hasError.value = false;
-    errorMessage.value = "";
-
-    if (!wallet.value || !wallet.value.account.address) {
-      tonBalance.value = "0";
-      return;
-    }
-
-    if (!tonClient) {
-      hasError.value = true;
-      errorMessage.value = "TON client not initialized";
-      return;
-    }
-
-    try {
-      isBalanceLoading.value = true;
-
-      // Get raw balance in nanoTON
-      const rawBalance = await tonClient.getBalance(
-        Address.parse(wallet.value.account.address)
-      );
-
-      // Convert from nanoTON to TON (1 TON = 10^9 nanoTON)
-      const balanceInTon = Number(rawBalance) / 10 ** 9;
-
-      // Format to a maximum of 4 decimal places
-      tonBalance.value = balanceInTon.toFixed(4);
-    } catch (error) {
-      console.error("Error fetching TON balance:", error);
-      hasError.value = true;
-      errorMessage.value = "Failed to fetch balance";
-      tonBalance.value = "0";
-    } finally {
-      isBalanceLoading.value = false;
-    }
-  };
-
-  // Fetch balance when wallet changes
+  // Whenever the connected wallet changes, refetch
   watch(
     wallet,
-    async () => {
-      await fetchWalletBalance();
+    async (w) => {
+      const addr = w?.account.address ?? "";
+      await fetchTonBalance(addr);
+      await fetchJettonBalance(addr);
     },
     { immediate: true }
   );
 
   return {
+    // TON
     balance: tonBalance,
     formattedBalance,
-    isLoading: isBalanceLoading,
-    hasError,
-    errorMessage,
-    fetchBalance: fetchWalletBalance,
+    isLoading: isTonLoading,
+    hasError: hasTonError,
+    errorMessage: tonErrorMessage,
+    fetchBalance: () => fetchTonBalance(wallet.value?.account.address ?? ""),
+
+    // Jetton
+    jettonBalance,
+    formattedJettonBalance,
+    isJettonLoading,
+    hasJettonError,
+    jettonErrorMessage,
+    fetchJettonBalance: () =>
+      fetchJettonBalance(wallet.value?.account.address ?? ""),
   };
 }

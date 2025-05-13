@@ -135,6 +135,23 @@
                 </button>
               </span>
             </p>
+            <p v-if="wallet" class="wallet-balance">
+              <span v-if="isJettonLoading">Loading balance...</span>
+              <span v-else-if="hasJettonError" class="balance-error">
+                <AlertCircle :size="14" />
+                {{ jettonErrorMessage || "Error loading balance" }}
+              </span>
+              <span v-else class="balance-container">
+                Balance: {{ formattedJettonBalance }}
+              </span>
+              <button
+                @click="fetchJettonBalance"
+                class="refresh-button"
+                :class="{ refreshing: isJettonLoading }"
+              >
+                <RefreshCw :size="16" />
+              </button>
+            </p>
           </div>
         </div>
         <div v-else-if="walletAddress && !wallet" class="wallet-info">
@@ -169,6 +186,12 @@ const {
   fetchBalance,
   hasError,
   errorMessage,
+
+  formattedJettonBalance,
+  isJettonLoading,
+  fetchJettonBalance,
+  hasJettonError,
+  jettonErrorMessage,
 } = useTonBalance();
 
 const userStore = useUserStore();
