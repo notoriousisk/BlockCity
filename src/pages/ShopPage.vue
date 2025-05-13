@@ -353,10 +353,10 @@ const handlePurchaseAsset = async (
 }
 
 .circle-icon {
-  width: 100px;
-  height: 100px;
-  min-width: 100px;
-  min-height: 100px;
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -373,8 +373,8 @@ const handlePurchaseAsset = async (
 }
 
 .coin-circle img {
-  width: 82px;
-  height: 82px;
+  width: 72px;
+  height: 72px;
 }
 
 .exchange-button {
