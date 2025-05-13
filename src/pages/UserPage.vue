@@ -105,27 +105,17 @@
       <div class="user-card">
         <div class="user-card-title">Wallet</div>
         <div v-if="walletExtended" class="wallet-info">
-          <img
-            class="wallet-image"
-            :src="walletExtended.imageUrl"
-            alt="Wallet logo"
-            width="40"
-            height="40"
-          />
-          <div class="wallet-meta">
-            <p class="wallet-name">
-              {{ walletExtended.name }}&nbsp;
-              <span class="wallet-app-name">{{ walletExtended.appName }}</span>
-            </p>
-            <p class="wallet-address">{{ wallet?.account.address }}</p>
-            <p v-if="wallet" class="wallet-balance">
-              <span v-if="isBalanceLoading">Loading balance...</span>
-              <span v-else-if="hasError" class="balance-error">
-                <AlertCircle :size="14" />
+          <div class="wallet-balance-container">
+            <div v-if="wallet" class="wallet-balance-display">
+              <div v-if="isBalanceLoading" class="balance-loading">
+                Loading balance...
+              </div>
+              <div v-else-if="hasError" class="balance-error">
+                <AlertCircle :size="18" />
                 {{ errorMessage || "Error loading balance" }}
-              </span>
-              <span v-else class="balance-container">
-                Balance: {{ formattedBalance }}
+              </div>
+              <div v-else class="balance-amount">
+                {{ formattedBalance }}
                 <button
                   @click="fetchBalance"
                   class="refresh-button"
@@ -133,25 +123,47 @@
                 >
                   <RefreshCw :size="16" />
                 </button>
-              </span>
-            </p>
-            <p v-if="wallet" class="wallet-balance">
-              <span v-if="isJettonLoading">Loading balance...</span>
-              <span v-else-if="hasJettonError" class="balance-error">
-                <AlertCircle :size="14" />
-                {{ jettonErrorMessage || "Error loading balance" }}
-              </span>
-              <span v-else class="balance-container">
-                Balance: {{ formattedJettonBalance }}
-              </span>
-              <button
-                @click="fetchJettonBalance"
-                class="refresh-button"
-                :class="{ refreshing: isJettonLoading }"
-              >
-                <RefreshCw :size="16" />
-              </button>
-            </p>
+              </div>
+            </div>
+
+            <div v-if="wallet" class="wallet-jetton-display">
+              <div v-if="isJettonLoading" class="balance-loading">
+                Loading jettons...
+              </div>
+              <div v-else-if="hasJettonError" class="balance-error">
+                <AlertCircle :size="18" />
+                {{ jettonErrorMessage || "Error loading jettons" }}
+              </div>
+              <div v-else class="jetton-balance-amount">
+                {{ formattedJettonBalance }}
+                <button
+                  @click="fetchJettonBalance"
+                  class="refresh-button"
+                  :class="{ refreshing: isJettonLoading }"
+                >
+                  <RefreshCw :size="16" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="wallet-details">
+            <img
+              class="wallet-image"
+              :src="walletExtended.imageUrl"
+              alt="Wallet logo"
+              width="24"
+              height="24"
+            />
+            <div class="wallet-meta">
+              <p class="wallet-name">
+                {{ walletExtended.name }}&nbsp;
+                <span class="wallet-app-name">{{
+                  walletExtended.appName
+                }}</span>
+              </p>
+              <p class="wallet-address">{{ wallet?.account.address }}</p>
+            </div>
           </div>
         </div>
         <div v-else-if="walletAddress && !wallet" class="wallet-info">
@@ -494,15 +506,53 @@ const navigateToShop = () => {
 }
 .wallet-info {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 16px;
   padding: 16px;
   background-color: var(--color-light);
   border-radius: 12px;
 }
+.wallet-balance-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.wallet-balance-display,
+.wallet-jetton-display {
+  width: 100%;
+}
+.balance-amount,
+.jetton-balance-amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.balance-loading {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+.balance-error {
+  color: #f44336;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+}
+.wallet-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
 .wallet-image {
-  border-radius: 8px;
+  border-radius: 6px;
 }
 .wallet-meta {
   flex: 1;
@@ -510,19 +560,19 @@ const navigateToShop = () => {
   width: 100%;
 }
 .wallet-name {
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
 }
 .wallet-app-name {
   opacity: 0.6;
   font-weight: 400;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 .wallet-address {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
+  margin: 2px 0 0;
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -530,6 +580,33 @@ const navigateToShop = () => {
   max-width: 100%;
   width: 100%;
   display: block;
+}
+.refresh-button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.refresh-button:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+.refresh-button.refreshing {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .wallet-status-reconnecting {
   margin: 4px 0 0;
@@ -544,20 +621,5 @@ const navigateToShop = () => {
   background-color: var(--color-light);
   border-radius: 12px;
   font-size: 1.1rem;
-}
-.wallet-balance {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  margin-top: 2px;
-}
-.balance-container {
-  display: flex;
-  align-items: center;
-}
-.balance-error {
-  color: #f44336;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 </style>
