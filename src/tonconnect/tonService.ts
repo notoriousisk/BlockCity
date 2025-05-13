@@ -22,7 +22,6 @@ const tonErrorMessage = ref("");
 
 // -- Reactive state for Jetton balance --
 const jettonBalance = ref<string>("0");
-const jettonSymbol = ref<string>(""); // e.g. "MYTKN"
 const isJettonLoading = ref(false);
 const hasJettonError = ref(false);
 const jettonErrorMessage = ref("");
@@ -79,14 +78,15 @@ async function fetchJettonBalance(ownerAddress: string) {
     isJettonLoading.value = true;
 
     // 1. Create a JettonMinter wrapper
-    // @ts-expect-error - JettonMinter 
+    // @ts-expect-error - JettonMinter
     const minter = new JettonMinter(tonweb.provider, {
       address: new TonWebAddress(JETTON_MASTER),
     });
 
+    console.log("minter", minter);
     // 2. Get token metadata (name, symbol, decimals)
     const meta = await minter.getJettonData();
-    jettonSymbol.value = meta.tokenWalletCode.toString();
+    console.log("meta", meta);
 
     // 3. Derive the user’s Jetton‐wallet address
     const walletAddr = await minter.getJettonWalletAddress(
@@ -97,12 +97,16 @@ async function fetchJettonBalance(ownerAddress: string) {
     const wallet = new JettonWallet(tonweb.provider, {
       address: walletAddr,
     });
+    console.log("wallet", wallet);
     const data = await wallet.getData();
+
+    console.log("data", data);
 
     // 5. Format balance using decimals
     const raw = data.balance.toString(); // big integer as string
     const human = Number(raw) / 10 ** 9;
     jettonBalance.value = human.toFixed(4);
+    console.log("jettonBalance", jettonBalance.value);
   } catch (e) {
     console.error("Error fetching Jetton balance:", e);
     hasJettonError.value = true;
@@ -120,11 +124,7 @@ export function useTonBalance() {
   const { wallet } = useTonWallet();
 
   const formattedBalance = computed(() => `${tonBalance.value} TON`);
-  const formattedJettonBalance = computed(() =>
-    jettonSymbol.value
-      ? `${jettonBalance.value} ${jettonSymbol.value}`
-      : `${jettonBalance.value}`
-  );
+  const formattedJettonBalance = computed(() => `${jettonBalance.value} BCJ`);
 
   // Whenever the connected wallet changes, refetch
   watch(
