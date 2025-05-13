@@ -165,74 +165,84 @@ export async function burnJettons(
   amount: number
 ): Promise<string | null> {
   if (!walletAddress || amount <= 0) {
-    console.error("Invalid wallet address or amount");
     return null;
   }
 
   try {
-    // Get TonConnectUI using the hook
+    // 1. Create a JettonMinter wrapper
+    // @ts-expect-error - JettonMinter
+    const minter = new JettonMinter(tonweb.provider, {
+      address: new TonWebAddress(JETTON_MASTER),
+    });
+
+    console.log("minter", minter);
+
+    // 2. Get the user's Jetton-wallet address
+    const jettonWalletAddr = await minter.getJettonWalletAddress(
+      new TonWebAddress(walletAddress)
+    );
+
+    console.log("jettonWalletAddr", jettonWalletAddr);
+
+    // 3. Create a JettonWallet wrapper for the user's wallet
+    const jettonWallet = new JettonWallet(tonweb.provider, {
+      address: jettonWalletAddr,
+    });
+
+    console.log("jettonWallet", jettonWallet);
+
+    // 4. Calculate the amount to burn (in nanojettons)
+    const amountToburn = amount * 10 ** 9; // Convert to nano units
+
+    // 5. Create a burn transaction
+    const burnParams = {
+      tokenAmount: new TonWeb.utils.BN(amountToburn),
+      responseAddress: new TonWebAddress(walletAddress),
+    };
+    console.log("burnParams", burnParams);
+
+    // 6. Generate the cell payload for the burn
+    const burnBody = await jettonWallet.createBurnBody(burnParams);
+    console.log("burnBody", burnBody);
+    // 7. Create a transaction message
+    const txData = {
+      to: jettonWalletAddr,
+      amount: TonWeb.utils.toNano("0.05"), // Standard fee for burn
+      payload: burnBody,
+    };
+    console.log("txData", txData);
+    // 8. Request wallet to send the transaction
+    // We need to use the TonConnect protocol for this
     const { tonConnectUI } = useTonConnectUI();
 
-    // Check if wallet is connected
-    if (!tonConnectUI || !tonConnectUI.wallet) {
-      console.error("Wallet is not connected via TonConnect");
-      return null;
+    console.log("tonConnectUI", tonConnectUI);
+
+    if (!tonConnectUI.connected) {
+      throw new Error("Wallet not connected");
     }
 
-    try {
-      // 1. Create a JettonMinter wrapper
-      // @ts-expect-error - JettonMinter
-      const minter = new JettonMinter(tonweb.provider, {
-        address: new TonWebAddress(JETTON_MASTER),
-      });
+    // 9. Send the transaction
+    // Convert the burn body to base64 string for the payload
+    // Get cell serialized bytes for TonConnect
+    const serializedBytes = await burnBody.toBoc();
 
-      // 2. Get the user's Jetton-wallet address
-      const jettonWalletAddr = await minter.getJettonWalletAddress(
-        new TonWebAddress(walletAddress)
-      );
+    console.log("serializedBytes", serializedBytes);
 
-      // 3. Create a JettonWallet wrapper for the user's wallet
-      const jettonWallet = new JettonWallet(tonweb.provider, {
-        address: jettonWalletAddr,
-      });
+    const result = await tonConnectUI.sendTransaction({
+      validUntil: Math.floor(Date.now() / 1000) + 360, // 5 minutes
+      messages: [
+        {
+          address: txData.to.toString(),
+          amount: txData.amount.toString(),
+          payload: TonWeb.utils.bytesToBase64(serializedBytes),
+        },
+      ],
+    });
 
-      // 4. Calculate the amount to burn (in nanojettons)
-      const amountToburn = amount * 10 ** 9; // Convert to nano units
-
-      // 5. Create a burn transaction
-      const burnParams = {
-        tokenAmount: new TonWeb.utils.BN(amountToburn),
-        responseAddress: new TonWebAddress(walletAddress),
-      };
-
-      // 6. Generate the cell payload for the burn
-      const burnBody = await jettonWallet.createBurnBody(burnParams);
-
-      // 7. Get cell serialized bytes for TonConnect
-      const serializedBytes = await burnBody.toBoc();
-
-      // 8. Create and send the transaction
-      console.log("Sending transaction...");
-      const result = await tonConnectUI.sendTransaction({
-        validUntil: Math.floor(Date.now() / 1000) + 360, // 5 minutes
-        messages: [
-          {
-            address: jettonWalletAddr.toString(),
-            amount: TonWeb.utils.toNano("0.05").toString(), // Standard fee for burn
-            payload: TonWeb.utils.bytesToBase64(serializedBytes),
-          },
-        ],
-      });
-
-      console.log("Transaction result:", result);
-      // Return transaction hash if successful
-      return result.boc;
-    } catch (innerError) {
-      console.error("Error in TonWeb or transaction processing:", innerError);
-      throw innerError; // Re-throw for better error handling in the calling function
-    }
+    // Return transaction hash if successful
+    return result.boc;
   } catch (e) {
     console.error("Error burning jettons:", e);
-    throw e; // Re-throw instead of returning null to allow specific error handling
+    return null;
   }
 }

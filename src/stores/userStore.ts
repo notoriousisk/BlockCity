@@ -292,139 +292,60 @@ export const useUserStore = defineStore("user", () => {
    * 3. Updates user balance in Firebase
    */
   async function burnJettonsForCoins() {
+    if (!userDoc.value || !walletAddress.value) {
+      openToast({
+        title: "Wallet Not Connected",
+        content: "Please connect your TON wallet first",
+        type: "error",
+      });
+      return false;
+    }
+
+    // Amount constants
+    const JETTONS_TO_BURN = 1000;
+    const COINS_TO_RECEIVE = 1000;
+
     try {
-      // Check if wallet is connected
-      if (!userDoc.value || !walletAddress.value) {
+      // 1. Perform the blockchain transaction to burn jettons
+      const txHash = await burnJettons(walletAddress.value, JETTONS_TO_BURN);
+
+      if (!txHash) {
         openToast({
-          title: "Wallet Not Connected",
-          content: "Please connect your TON wallet first",
+          title: "Transaction Failed",
+          content: "Failed to exchange jettons burn. Please try again.",
           type: "error",
         });
         return false;
       }
 
-      // Amount constants
-      const JETTONS_TO_BURN = 1000;
-      const COINS_TO_RECEIVE = 1000;
+      // 2. Add coins to user balance in Firebase
+      const success = await addCoinsFromJettonBurn(
+        userDoc.value.telegramId,
+        COINS_TO_RECEIVE
+      );
 
-      try {
-        // Get TonConnectUI instance - allow exceptions to bubble up
-        const { tonConnectUI } = useTonConnectUI();
-
-        // Ensure wallet is connected
-        if (!tonConnectUI.wallet) {
-          try {
-            // Try to open the connection modal
-            await tonConnectUI.openModal();
-            if (!tonConnectUI.wallet) {
-              throw new Error("Failed to connect wallet");
-            }
-          } catch (e) {
-            console.error("Failed to connect wallet:", e);
-            openToast({
-              title: "Wallet Connection Failed",
-              content: "Please connect your wallet and try again",
-              type: "error",
-            });
-            return false;
-          }
-        }
-
-        // Check if the connected wallet matches our stored address
-        // This is a safety check to ensure the right wallet is connected
-        if (tonConnectUI.wallet.account.address !== walletAddress.value) {
-          console.warn("Connected wallet address doesn't match stored address");
-          openToast({
-            title: "Wallet Mismatch",
-            content:
-              "Please connect the correct wallet or disconnect and reconnect",
-            type: "warning",
-          });
-          return false;
-        }
-
-        // 1. Call the backend function with TonConnect UI instance for transaction
-        const txHash = await burnJettons(walletAddress.value, JETTONS_TO_BURN);
-
-        if (!txHash) {
-          openToast({
-            title: "Transaction Failed",
-            content: "Failed to exchange jettons burn. Please try again.",
-            type: "error",
-          });
-          return false;
-        }
-
-        // 2. Add coins to user balance in Firebase
-        const success = await addCoinsFromJettonBurn(
-          userDoc.value.telegramId,
-          COINS_TO_RECEIVE
-        );
-
-        if (success) {
-          openToast({
-            title: "Conversion Successful",
-            content: `Exchanged ${JETTONS_TO_BURN} jettons for ${COINS_TO_RECEIVE} coins!`,
-            type: "success",
-          });
-        } else {
-          openToast({
-            title: "Conversion Error",
-            content: "Jettons were burned but failed to add coins to balance.",
-            type: "error",
-          });
-        }
-
-        return success;
-      } catch (e) {
-        if (
-          (e as Error).message?.includes(
-            "TonConnectUI injection is not provided"
-          )
-        ) {
-          console.error("TonConnectUI plugin not initialized properly:", e);
-          openToast({
-            title: "Technical Error",
-            content: "Please reload the app and try again",
-            type: "error",
-          });
-        } else {
-          throw e;
-        }
-        return false;
+      if (success) {
+        openToast({
+          title: "Conversion Successful",
+          content: `Exchanged ${JETTONS_TO_BURN} jettons for ${COINS_TO_RECEIVE} coins!`,
+          type: "success",
+        });
+      } else {
+        openToast({
+          title: "Conversion Error",
+          content: "Jettons were burned but failed to add coins to balance.",
+          type: "error",
+        });
       }
+
+      return success;
     } catch (error) {
       console.error("Error in exchanging jettons for coins:", error);
-
-      // Provide more specific error messages based on the error type
-      let errorMessage = "Unknown error occurred";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-
-        // Handle specific error cases
-        if (errorMessage.includes("user rejected the transaction")) {
-          openToast({
-            title: "Transaction Rejected",
-            content: "You've canceled the transaction",
-            type: "warning",
-          });
-          return false;
-        }
-
-        if (errorMessage.includes("insufficient funds")) {
-          openToast({
-            title: "Insufficient Funds",
-            content: "Not enough jettons or TON for transaction fees",
-            type: "error",
-          });
-          return false;
-        }
-      }
-
       openToast({
         title: "Conversion Failed",
-        content: `Error: ${errorMessage}`,
+        content: `Error: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
         type: "error",
       });
       return false;
