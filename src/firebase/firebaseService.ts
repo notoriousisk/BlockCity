@@ -233,3 +233,21 @@ export async function getActiveBoosts(
   }
   return boosts;
 }
+
+/** Add coins to user balance after successful jetton burn transaction */
+export async function addCoinsFromJettonBurn(
+  telegramId: string,
+  amount: number
+): Promise<boolean> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return false;
+  const data = snap.data() as UserDoc;
+
+  // Update user balance
+  await updateDoc(userRef, {
+    balance: data.balance + amount,
+  });
+
+  return true;
+}

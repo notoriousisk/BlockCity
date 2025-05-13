@@ -116,7 +116,11 @@
             <span class="bcj-symbol">BCJ</span>
           </div>
 
-          <button class="exchange-button" :disabled="!isWalletConnected">
+          <button
+            class="exchange-button"
+            :disabled="!isWalletConnected"
+            @click="burnJettonsForCoins"
+          >
             <RefreshCw :size="20" />
             <span>Exchange</span>
           </button>
@@ -145,7 +149,8 @@ import { RefreshCw } from "lucide-vue-next";
 
 const userStore = useUserStore();
 const { balance, energy } = storeToRefs(userStore);
-const { refillEnergyAction, purchaseAssetAction } = userStore;
+const { refillEnergyAction, purchaseAssetAction, burnJettonsForCoins } =
+  userStore;
 
 // Wallet connection status
 const { wallet } = useTonWallet();
