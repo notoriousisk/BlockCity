@@ -48,59 +48,6 @@
           <span class="resource-bar-value">{{ energy }}/100</span>
         </div>
       </div>
-      <!-- Assets Card -->
-      <div class="user-card">
-        <div class="user-card-title">Boosts</div>
-        <div class="asset-list">
-          <div class="asset-item">
-            <div class="asset-icon-bg">
-              <img src="@/assets/smart.png" alt="Smart" />
-            </div>
-            <div class="asset-info">
-              <div class="asset-name">Hints for 60 sec</div>
-              <div class="asset-amount">x{{ assets.showAvailableMoves }}</div>
-            </div>
-          </div>
-          <div class="asset-item">
-            <div class="asset-icon-bg">
-              <img src="@/assets/robot.png" alt="Robot" />
-            </div>
-            <div class="asset-info">
-              <div class="asset-name">AI Assistant for 60 sec</div>
-              <div class="asset-amount">x{{ assets.aiAssistant }}</div>
-            </div>
-          </div>
-        </div>
-        <button @click="navigateToShop" class="shop-button">
-          <img src="@/assets/coin.png" class="shop-icon" alt="Shop" />
-          Shop
-        </button>
-      </div>
-
-      <!-- Referral Card -->
-      <div class="user-card">
-        <div class="user-card-title">Referral Link</div>
-        <div class="referral-multiplier">
-          <div class="multiplier-label">Current Referral Multiplier:</div>
-          <div class="multiplier-value">{{ referralMultiplier }}x</div>
-        </div>
-        <div class="referral-link-container">
-          <input
-            type="text"
-            :value="referralCode"
-            readonly
-            class="referral-input"
-          />
-          <button
-            @click="handleCopyReferral"
-            class="copy-button"
-            :class="{ copied: isCopied }"
-          >
-            {{ isCopied ? "Copied!" : "Copy" }}
-          </button>
-        </div>
-      </div>
-
       <!-- TON Connect Button -->
       <div class="user-card">
         <div class="user-card-title">Wallet</div>
@@ -176,6 +123,57 @@
         <div class="ton-connect-button-container">
           <TonConnectButton />
         </div>
+      </div>
+      <!-- Referral Card -->
+      <div class="user-card">
+        <div class="user-card-title">Referral Link</div>
+        <div class="referral-multiplier">
+          <div class="multiplier-label">Current Referral Multiplier:</div>
+          <div class="multiplier-value">{{ referralMultiplier }}x</div>
+        </div>
+        <div class="referral-link-container">
+          <input
+            type="text"
+            :value="referralCode"
+            readonly
+            class="referral-input"
+          />
+          <button
+            @click="handleCopyReferral"
+            class="copy-button"
+            :class="{ copied: isCopied }"
+          >
+            {{ isCopied ? "Copied!" : "Copy" }}
+          </button>
+        </div>
+      </div>
+      <!-- Assets Card -->
+      <div class="user-card">
+        <div class="user-card-title">Boosts</div>
+        <div class="asset-list">
+          <div class="asset-item">
+            <div class="asset-icon-bg">
+              <img src="@/assets/smart.png" alt="Smart" />
+            </div>
+            <div class="asset-info">
+              <div class="asset-name">Hints for 60 sec</div>
+              <div class="asset-amount">x{{ assets.showAvailableMoves }}</div>
+            </div>
+          </div>
+          <div class="asset-item">
+            <div class="asset-icon-bg">
+              <img src="@/assets/robot.png" alt="Robot" />
+            </div>
+            <div class="asset-info">
+              <div class="asset-name">AI Assistant for 60 sec</div>
+              <div class="asset-amount">x{{ assets.aiAssistant }}</div>
+            </div>
+          </div>
+        </div>
+        <button @click="navigateToShop" class="shop-button">
+          <img src="@/assets/coin.png" class="shop-icon" alt="Shop" />
+          Shop
+        </button>
       </div>
     </template>
   </AppPage>
