@@ -1,9 +1,10 @@
+// Add Buffer polyfill (must be first)
+import "./utils/buffer-polyfill";
+
 import "./assets/index.css";
 
 import { createApp } from "vue";
-import {
-  retrieveLaunchParams,
-} from "@telegram-apps/sdk-vue";
+import { retrieveLaunchParams } from "@telegram-apps/sdk-vue";
 import { createPinia } from "pinia";
 
 import App from "./App.vue";

@@ -20,6 +20,19 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      buffer: "buffer",
+    },
+  },
+  define: {
+    // Handle Node.js globals
+    global: "window",
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      // Node.js global to browser globalThis
+      define: {
+        global: "globalThis",
+      },
     },
   },
   publicDir: "./public",

@@ -118,6 +118,23 @@
               <span class="wallet-app-name">{{ walletExtended.appName }}</span>
             </p>
             <p class="wallet-address">{{ wallet?.account.address }}</p>
+            <p v-if="wallet" class="wallet-balance">
+              <span v-if="isBalanceLoading">Loading balance...</span>
+              <span v-else-if="hasError" class="balance-error">
+                <AlertCircle :size="14" />
+                {{ errorMessage || "Error loading balance" }}
+              </span>
+              <span v-else class="balance-container">
+                Balance: {{ formattedBalance }}
+                <button
+                  @click="fetchBalance"
+                  class="refresh-button"
+                  :class="{ refreshing: isBalanceLoading }"
+                >
+                  <RefreshCw :size="16" />
+                </button>
+              </span>
+            </p>
           </div>
         </div>
         <div v-else-if="walletAddress && !wallet" class="wallet-info">
@@ -138,14 +155,21 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { User, Star } from "lucide-vue-next";
+import { User, Star, RefreshCw, AlertCircle } from "lucide-vue-next";
 import AppPage from "@/components/AppPage.vue";
 import { useUserStore } from "@/stores/userStore";
-import { TonConnectButton, useTonWallet } from "@/tonconnect";
+import { TonConnectButton, useTonWallet, useTonBalance } from "@/tonconnect";
 import { useNavbarStore } from "@/stores/navbarStore";
 
 const isCopied = ref(false);
 const { wallet } = useTonWallet();
+const {
+  formattedBalance,
+  isLoading: isBalanceLoading,
+  fetchBalance,
+  hasError,
+  errorMessage,
+} = useTonBalance();
 
 const userStore = useUserStore();
 const {
@@ -490,5 +514,20 @@ const navigateToShop = () => {
   background-color: var(--color-light);
   border-radius: 12px;
   font-size: 1.1rem;
+}
+.wallet-balance {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+.balance-container {
+  display: flex;
+  align-items: center;
+}
+.balance-error {
+  color: #f44336;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 </style>
