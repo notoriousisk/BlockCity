@@ -108,7 +108,7 @@
       </div>
 
       <!-- Exchange BCJ Jettons -->
-      <div class="shop-card bcj-card">
+      <div class="exchange-shop-card">
         <div class="shop-card-title">Exchange BCJ Jettons</div>
 
         <div class="exchange-container">
@@ -202,6 +202,7 @@ const handlePurchaseAsset = async (
   justify-content: space-between;
   gap: 16px;
   margin: 0 0 32px 0;
+  width: 100%;
 }
 .resource-card {
   flex: 1;
@@ -229,6 +230,8 @@ const handlePurchaseAsset = async (
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  align-items: center;
 }
 .shop-card {
   display: flex;
@@ -238,6 +241,21 @@ const handlePurchaseAsset = async (
   box-shadow: 0 1px 4px var(--color-card-shadow);
   padding: 24px 20px;
   gap: 18px;
+  border: 1.5px solid var(--color-card-border);
+  width: 100%;
+}
+
+.exchange-shop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  box-shadow: 0 1px 4px var(--color-card-shadow);
+  padding: 24px 20px;
+  gap: 18px;
+  width: 100%;
   border: 1.5px solid var(--color-card-border);
 }
 .shop-card-icon {
@@ -327,23 +345,18 @@ const handlePurchaseAsset = async (
   font-weight: 700;
   font-size: 2rem;
 }
-
-.bcj-card {
-  height: 220px;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
 .exchange-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 70%;
+  width: 100%;
 }
 
 .circle-icon {
   width: 100px;
   height: 100px;
+  min-width: 100px;
+  min-height: 100px;
   border-radius: 50%;
   display: flex;
   align-items: center;
