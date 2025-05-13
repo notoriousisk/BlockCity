@@ -499,7 +499,10 @@ const navigateToShop = () => {
   margin: 4px 0 0;
   font-size: 0.9rem;
   color: var(--color-text-secondary);
-  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 .wallet-status-reconnecting {
   margin: 4px 0 0;
