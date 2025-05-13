@@ -62,7 +62,7 @@
                 {{ errorMessage || "Error loading balance" }}
               </div>
               <div v-else class="balance-amount">
-                {{ formattedBalance }}
+                <span class="balance-text">{{ formattedBalance }}</span>
                 <button
                   @click="fetchBalance"
                   class="refresh-button"
@@ -82,7 +82,7 @@
                 {{ jettonErrorMessage || "Error loading jettons" }}
               </div>
               <div v-else class="jetton-balance-amount">
-                {{ formattedJettonBalance }}
+                <span class="balance-text">{{ formattedJettonBalance }}</span>
                 <button
                   @click="fetchJettonBalance"
                   class="refresh-button"
@@ -619,5 +619,11 @@ const navigateToShop = () => {
   background-color: var(--color-light);
   border-radius: 12px;
   font-size: 1.1rem;
+}
+.balance-text {
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
