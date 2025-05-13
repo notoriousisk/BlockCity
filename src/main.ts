@@ -33,6 +33,12 @@ app.use(router);
 app.use(TonConnectUIPlugin, {
   manifestUrl: publicUrl("tonconnect-manifest.json"),
 });
+console.log("TonConnectUIPlugin", TonConnectUIPlugin);
+TonConnectUIPlugin.install(app, {
+  manifestUrl: publicUrl("tonconnect-manifest.json"),
+});
+
+console.log("TonConnectUIPlugin", TonConnectUIPlugin);
 app.mount("#app");
 
 const userStore = useUserStore();
