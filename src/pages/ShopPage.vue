@@ -106,6 +106,30 @@
           </button>
         </div>
       </div>
+
+      <!-- Exchange BCJ Jettons -->
+      <div class="shop-card bcj-card">
+        <div class="shop-card-title">Exchange BCJ Jettons</div>
+
+        <div class="exchange-container">
+          <div class="circle-icon jetton-circle">
+            <span class="bcj-symbol">BCJ</span>
+          </div>
+
+          <button class="exchange-button" :disabled="!isWalletConnected">
+            <RefreshCw :size="20" />
+            <span>Exchange</span>
+          </button>
+
+          <div class="circle-icon coin-circle">
+            <img src="@/assets/coin.png" alt="Coin" />
+          </div>
+        </div>
+
+        <div class="shop-card-desc">
+          Convert 1000 BCJ tokens to 1000 game coins
+        </div>
+      </div>
     </div>
   </AppPage>
 </template>
@@ -116,10 +140,16 @@ import { storeToRefs } from "pinia";
 import AppPage from "@/components/AppPage.vue";
 import { useUserStore } from "@/stores/userStore";
 import { ASSET_COSTS } from "@/types";
+import { useTonWallet } from "@/tonconnect/useTonWallet";
+import { RefreshCw } from "lucide-vue-next";
 
 const userStore = useUserStore();
 const { balance, energy } = storeToRefs(userStore);
 const { refillEnergyAction, purchaseAssetAction } = userStore;
+
+// Wallet connection status
+const { wallet } = useTonWallet();
+const isWalletConnected = computed(() => !!wallet.value);
 
 const energyRefillCost = computed(() => {
   const energyNeeded = 100 - energy.value;
@@ -227,7 +257,6 @@ const handlePurchaseAsset = async (
   font-size: 1.18rem;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 2px;
 }
 .shop-card-desc {
   color: var(--color-text-secondary);
@@ -274,6 +303,97 @@ const handlePurchaseAsset = async (
   box-shadow: 0 0 0 0 var(--color-primary-light),
     0 1px 4px var(--color-card-shadow);
 }
+
+.jetton-label {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-balance);
+}
+
+.jetton-icon {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bcj-symbol {
+  color: white;
+  font-weight: 700;
+  font-size: 2rem;
+}
+
+.bcj-card {
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.exchange-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 70%;
+}
+
+.circle-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.jetton-circle {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+}
+
+.coin-circle {
+  background: var(--color-accent-light);
+}
+
+.coin-circle img {
+  width: 82px;
+  height: 82px;
+}
+
+.exchange-button {
+  background: var(--color-button-primary);
+  color: var(--color-button-text);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exchange-button:hover:not(:disabled) {
+  background-color: var(--color-button-primary-hover);
+}
+
+.exchange-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes pulsate {
   0% {
     box-shadow: 0 0 0 0 var(--color-primary-light),
