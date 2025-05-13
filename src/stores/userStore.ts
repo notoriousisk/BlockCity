@@ -14,6 +14,7 @@ import {
   refillEnergy,
   activateBoost,
 } from "@/firebase/firebaseService";
+import { useTonConnectUI } from "@/tonconnect/useTonConnectUI";
 
 export interface DisplayDataRow {
   title: string;
@@ -35,6 +36,7 @@ export const useUserStore = defineStore("user", () => {
   const currentLevelId = ref(1);
   const numberOfRefs = ref(0);
   const referralMultiplier = ref(1);
+  const walletAddress = ref("");
 
   // Computed properties
   const user = computed(() => initDataRef.value?.user);
@@ -99,10 +101,47 @@ export const useUserStore = defineStore("user", () => {
       numberOfRefs.value = data.numberOfRefs;
       referralMultiplier.value = data.referralMultiplier;
       activeBoosts.value = data.activeBoosts || {};
+      walletAddress.value = data.walletAddress;
+
+      // Restore wallet connection if we have a stored address
+      if (data.walletAddress && !wasWalletRestoreAttempted.value) {
+        restoreWalletConnection();
+      }
     });
 
     // Start interval to refresh energy in real-time
     startEnergyRefreshInterval();
+  }
+
+  // Track if we've already tried to restore the wallet to avoid multiple attempts
+  const wasWalletRestoreAttempted = ref(false);
+
+  // Restore wallet connection from saved address
+  async function restoreWalletConnection() {
+    try {
+      // Mark that we've attempted to restore
+      wasWalletRestoreAttempted.value = true;
+
+      if (!walletAddress.value) return;
+
+      const { tonConnectUI } = useTonConnectUI();
+
+      // Check if wallet is already connected
+      if (tonConnectUI.wallet) return;
+
+      // Attempt to reconnect to the last wallet
+      // This will use the session that should still be stored in localStorage
+      await tonConnectUI.openModal();
+
+      openToast({
+        title: "Wallet Connected",
+        content: "Your TON wallet has been automatically connected",
+        type: "success",
+      });
+    } catch (err) {
+      console.error("Failed to restore wallet connection:", err);
+      // If there's an error, we'll just let the user connect manually
+    }
   }
 
   // Start interval to update energy in real-time
@@ -253,32 +292,27 @@ export const useUserStore = defineStore("user", () => {
   });
 
   return {
-    // State
-    balance,
-    energy,
-    assets,
-    activeBoosts,
-    currentLevelId,
-    numberOfRefs,
-    referralMultiplier,
-    // Computed
+    init,
     user,
     userRows,
     userPhotoUrl,
     userName,
     userUsername,
+    balance,
+    energy,
+    assets,
+    currentLevelId,
+    numberOfRefs,
+    referralMultiplier,
     referralCode,
+    copyReferralLink,
     isShowMovesActive,
     isAiAssistantActive,
-    // actions
-    init,
     spendEnergyAction,
     refillEnergyAction,
-    purchaseAssetAction,
     completeLevelAction,
-    copyReferralLink,
+    purchaseAssetAction,
     activateBoostAction,
-    startEnergyRefreshInterval,
-    stopEnergyRefreshInterval,
+    walletAddress,
   };
 });

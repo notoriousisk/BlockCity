@@ -12,12 +12,7 @@ import {
 import type { GameBackendLevel, UserDoc, ActiveBoosts } from "@/types";
 import { ASSET_COSTS } from "@/types";
 
-// —— Levels: fetch all or one ——
-
-// export async function fetchLevels(): Promise<Level[]> {
-//   const snap = await getDocs(collection(db, "levels"));
-//   return snap.docs.map((d) => d.data() as Level);
-// }
+// —— Level: fetch  ——
 
 export async function fetchLevel(id: number): Promise<GameBackendLevel | null> {
   const snap = await getDoc(doc(db, "levels", id.toString()));
@@ -74,6 +69,20 @@ export function onUserDataChange(
     if (snap.exists()) callback(snap.data() as UserDoc);
   });
   return unsub;
+}
+
+/** Update wallet address for the user */
+export async function updateWalletAddress(
+  telegramId: string,
+  address: string
+): Promise<void> {
+  const userRef = doc(db, "users", telegramId);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return;
+
+  await updateDoc(userRef, {
+    walletAddress: address,
+  });
 }
 
 /** Compute refill + clamp, then decrement cost. */

@@ -120,6 +120,13 @@
             <p class="wallet-address">{{ wallet?.account.address }}</p>
           </div>
         </div>
+        <div v-else-if="walletAddress && !wallet" class="wallet-info">
+          <div class="wallet-meta">
+            <p class="wallet-name">Your wallet</p>
+            <p class="wallet-address">{{ walletAddress }}</p>
+            <p class="wallet-status-reconnecting">Reconnecting...</p>
+          </div>
+        </div>
         <div class="ton-connect-button-container">
           <TonConnectButton />
         </div>
@@ -152,6 +159,7 @@ const {
   assets,
   referralMultiplier,
   referralCode,
+  walletAddress,
 } = storeToRefs(userStore);
 
 const { copyReferralLink } = userStore;
@@ -468,6 +476,12 @@ const navigateToShop = () => {
   font-size: 0.9rem;
   color: var(--color-text-secondary);
   word-break: break-all;
+}
+.wallet-status-reconnecting {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  font-style: italic;
 }
 .error-message {
   color: var(--color-text-secondary);
