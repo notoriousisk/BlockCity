@@ -37,7 +37,7 @@ const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
 const { Address: TonWebAddress } = TonWeb.utils;
 
 // Replace with your on-chain Jetton master address:
-const JETTON_MASTER = "EQCAT2BrlVj_Df-YqLcZYc_kg5sFSZ3o7L0yXrRB94lv__6G";
+const JETTON_MASTER = import.meta.env.VITE_TON_JETTON_ADDRESS;
 
 /**
  * Fetch native TON balance.
