@@ -62,7 +62,10 @@
                 {{ errorMessage || "Error loading balance" }}
               </div>
               <div v-else class="balance-amount">
-                <span class="balance-text">{{ formattedBalance }}</span>
+                <div class="balance-container">
+                  <span class="balance-number">{{ tonBalance }}</span>
+                  <span class="balance-symbol">TON</span>
+                </div>
                 <button
                   @click="fetchBalance"
                   class="refresh-button"
@@ -82,7 +85,10 @@
                 {{ jettonErrorMessage || "Error loading jettons" }}
               </div>
               <div v-else class="jetton-balance-amount">
-                <span class="balance-text">{{ formattedJettonBalance }}</span>
+                <div class="balance-container">
+                  <span class="balance-number">{{ jettonBalance }}</span>
+                  <span class="balance-symbol">BCJ</span>
+                </div>
                 <button
                   @click="fetchJettonBalance"
                   class="refresh-button"
@@ -191,13 +197,13 @@ import { useNavbarStore } from "@/stores/navbarStore";
 const isCopied = ref(false);
 const { wallet } = useTonWallet();
 const {
-  formattedBalance,
+  balance: tonBalance,
   isLoading: isBalanceLoading,
   fetchBalance,
   hasError,
   errorMessage,
 
-  formattedJettonBalance,
+  jettonBalance,
   isJettonLoading,
   fetchJettonBalance,
   hasJettonError,
@@ -619,6 +625,21 @@ const navigateToShop = () => {
   background-color: var(--color-light);
   border-radius: 12px;
   font-size: 1.1rem;
+}
+.balance-container {
+  display: flex;
+  align-items: center;
+  max-width: 80%;
+}
+.balance-number {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 60px);
+}
+.balance-symbol {
+  white-space: nowrap;
+  margin-left: 5px;
 }
 .balance-text {
   max-width: 80%;

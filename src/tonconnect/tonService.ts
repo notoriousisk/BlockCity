@@ -1,4 +1,4 @@
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 import { TonClient } from "@ton/ton";
 import { Address as TonClientAddress } from "@ton/core";
 import { useTonWallet } from "./useTonWallet";
@@ -126,9 +126,6 @@ async function fetchJettonBalance(ownerAddress: string) {
 export function useTonBalance() {
   const { wallet } = useTonWallet();
 
-  const formattedBalance = computed(() => `${tonBalance.value} TON`);
-  const formattedJettonBalance = computed(() => `${jettonBalance.value} BCJ`);
-
   // Whenever the connected wallet changes, refetch
   watch(
     wallet,
@@ -143,7 +140,6 @@ export function useTonBalance() {
   return {
     // TON
     balance: tonBalance,
-    formattedBalance,
     isLoading: isTonLoading,
     hasError: hasTonError,
     errorMessage: tonErrorMessage,
@@ -151,7 +147,6 @@ export function useTonBalance() {
 
     // Jetton
     jettonBalance,
-    formattedJettonBalance,
     isJettonLoading,
     hasJettonError,
     jettonErrorMessage,
