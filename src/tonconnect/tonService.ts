@@ -79,6 +79,7 @@ async function fetchJettonBalance(ownerAddress: string) {
     isJettonLoading.value = true;
 
     // 1. Create a JettonMinter wrapper
+    // @ts-expect-error - JettonMinter 
     const minter = new JettonMinter(tonweb.provider, {
       address: new TonWebAddress(JETTON_MASTER),
     });
