@@ -483,6 +483,8 @@ const navigateToShop = () => {
 }
 .wallet-meta {
   flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 .wallet-name {
   font-weight: 600;
@@ -503,6 +505,8 @@ const navigateToShop = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  width: 100%;
+  display: block;
 }
 .wallet-status-reconnecting {
   margin: 4px 0 0;
