@@ -292,27 +292,33 @@ export const useUserStore = defineStore("user", () => {
   });
 
   return {
-    init,
+    // State
+    balance,
+    energy,
+    assets,
+    activeBoosts,
+    currentLevelId,
+    numberOfRefs,
+    referralMultiplier,
+    walletAddress,
+    // Computed
     user,
     userRows,
     userPhotoUrl,
     userName,
     userUsername,
-    balance,
-    energy,
-    assets,
-    currentLevelId,
-    numberOfRefs,
-    referralMultiplier,
     referralCode,
-    copyReferralLink,
     isShowMovesActive,
     isAiAssistantActive,
+    // actions
+    init,
     spendEnergyAction,
     refillEnergyAction,
-    completeLevelAction,
     purchaseAssetAction,
+    completeLevelAction,
+    copyReferralLink,
     activateBoostAction,
-    walletAddress,
+    startEnergyRefreshInterval,
+    stopEnergyRefreshInterval,
   };
 });
