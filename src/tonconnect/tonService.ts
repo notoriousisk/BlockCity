@@ -9,6 +9,7 @@ let tonClient: TonClient;
 try {
   tonClient = new TonClient({
     endpoint: "https://toncenter.com/api/v2/jsonRPC",
+    apiKey: import.meta.env.VITE_TONCENTER_API_KEY,
   });
 } catch (error) {
   console.error("Failed to initialize TON client:", error);
@@ -28,7 +29,9 @@ const jettonErrorMessage = ref("");
 
 // -- TonWeb setup for Jetton --
 const tonweb = new TonWeb(
-  new TonWeb.HttpProvider("https://toncenter.com/api/v2/jsonRPC")
+  new TonWeb.HttpProvider("https://toncenter.com/api/v2/jsonRPC", {
+    apiKey: import.meta.env.VITE_TONCENTER_API_KEY,
+  })
 );
 const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
 const { Address: TonWebAddress } = TonWeb.utils;
@@ -88,7 +91,7 @@ async function fetchJettonBalance(ownerAddress: string) {
     const meta = await minter.getJettonData();
     console.log("meta", meta);
 
-    // 3. Derive the user’s Jetton‐wallet address
+    // 3. Derive the user's Jetton‐wallet address
     const walletAddr = await minter.getJettonWalletAddress(
       new TonWebAddress(ownerAddress)
     );
