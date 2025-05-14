@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastStore } from "@/stores/toast";
+import { useToastStore } from "@/stores/toastStore";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
 

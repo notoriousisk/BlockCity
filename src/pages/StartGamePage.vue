@@ -28,7 +28,7 @@ import { useGameStore } from "@/stores/gameStore";
 import { useUserStore } from "@/stores/userStore";
 import { loadLevel } from "@/game/api";
 import { useNavbarStore } from "@/stores/navbarStore";
-import { openToast } from "@/stores/toast";
+import { openToast } from "@/stores/toastStore";
 const ZapIcon = Zap;
 const router = useRouter();
 const gameStore = useGameStore();

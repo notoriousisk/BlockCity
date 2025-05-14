@@ -1,7 +1,7 @@
 import { ref, computed, onUnmounted, type Component } from "vue";
 import { defineStore } from "pinia";
 import { initData, useSignal, type User } from "@telegram-apps/sdk-vue";
-import { openToast } from "@/stores/toast";
+import { openToast } from "@/stores/toastStore";
 
 import type { UserDoc, Assets, ActiveBoosts } from "@/types";
 
