@@ -54,7 +54,7 @@ export const useUserStore = defineStore("user", () => {
   const userUsername = computed(() => user.value?.username || "");
   const referralCode = computed(() => {
     return initDataRef.value?.user
-      ? `https://t.me/your_bot?start=${initDataRef.value.user.id}`
+      ? `https://t.me/blockcity_bot/game?start=${initDataRef.value.user.id}`
       : "";
   });
 
