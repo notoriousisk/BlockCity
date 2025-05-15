@@ -45,6 +45,8 @@ export const ASSET_COSTS = {
   aiAssistant: 600,
 };
 
+export const MAX_REFERRAL_MULTIPLIER = 2;
+export const REFERRAL_MULTIPLIER_STEP = 0.02;
 export interface ToastProps {
   title: string;
   content?: string;

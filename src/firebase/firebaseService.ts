@@ -10,7 +10,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import type { GameBackendLevel, UserDoc, ActiveBoosts } from "@/types";
-import { ASSET_COSTS } from "@/types";
+import { ASSET_COSTS, MAX_REFERRAL_MULTIPLIER, REFERRAL_MULTIPLIER_STEP } from "@/types";
 
 // —— Level: fetch  ——
 
@@ -38,7 +38,7 @@ export async function initUser(
       assets: { showAvailableMoves: 0, aiAssistant: 0 },
       currentLevelId: 1,
       numberOfRefs: 0,
-      referralMultiplier: referralCode ? 1.1 : 1,
+      referralMultiplier: referralCode ? 1 + REFERRAL_MULTIPLIER_STEP : 1,
       lastEnergyUpdate: serverTimestamp() as Timestamp,
       energyRefillRateMs: 60000, // 1 energy per minute
       referredBy: referralCode,
@@ -53,7 +53,10 @@ export async function initUser(
         const refData = refSnap.data() as UserDoc;
         await updateDoc(refRef, {
           numberOfRefs: refData.numberOfRefs + 1,
-          referralMultiplier: refData.referralMultiplier + 0.05,
+          referralMultiplier: Math.min(
+            refData.referralMultiplier + REFERRAL_MULTIPLIER_STEP,
+            MAX_REFERRAL_MULTIPLIER
+          ),
         });
       }
     }
