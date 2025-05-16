@@ -2,6 +2,11 @@ import type { Level, Cluster, Move } from "@/game/types";
 import { getTileCoordinate } from "../core/utils";
 import { tileColors } from "@/game/types";
 
+const darkBgColor =
+  getComputedStyle(document.documentElement)
+    .getPropertyValue("--color-dark-bg")
+    .trim() || "#000000";
+
 /**
  * Draw a tile on the canvas
  */
@@ -11,13 +16,17 @@ export function drawTile(
   y: number,
   color: string,
   tileWidth: number,
-  tileHeight: number
+  tileHeight: number,
+  selected: boolean = false
 ): void {
   // Create rounded rectangle for the tile
   const cornerRadius = 5;
 
   // Create a lighter color for highlights
   const lighterColor = adjustColor(color, 50);
+
+  // Darken the color if selected
+  const baseColor = selected ? adjustColor(color, -50) : color;
 
   // Main tile body with gradient
   const gradient = ctx.createLinearGradient(
@@ -26,8 +35,11 @@ export function drawTile(
     x + tileWidth - 4,
     y + tileHeight - 4
   );
-  gradient.addColorStop(0, lighterColor);
-  gradient.addColorStop(1, color);
+  gradient.addColorStop(
+    0,
+    selected ? adjustColor(lighterColor, -30) : lighterColor
+  );
+  gradient.addColorStop(1, baseColor);
 
   ctx.fillStyle = gradient;
 
@@ -62,6 +74,13 @@ export function drawTile(
   ctx.arcTo(x + 2, y + 2, x + 2 + cornerRadius, y + 2, cornerRadius);
   ctx.closePath();
   ctx.fill();
+
+  // Add border for selected tiles
+  if (selected) {
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
 
   // Top-left highlight (shiny border)
   const highlightGradient = ctx.createLinearGradient(
@@ -153,10 +172,7 @@ export function renderTiles(
   );
 
   // Draw level background
-  const computedStyle = getComputedStyle(document.documentElement);
-
-  ctx.fillStyle =
-    computedStyle.getPropertyValue("--color-dark-bg").trim() || "#000000";
+  ctx.fillStyle = darkBgColor;
   ctx.fillRect(
     0,
     0,
@@ -196,9 +212,10 @@ export function renderTiles(
           ctx,
           coord.tilex,
           coord.tiley,
-          "#ff0000",
+          tileColors[level.tiles[i][j].type],
           level.tileWidth,
-          level.tileHeight
+          level.tileHeight,
+          true
         );
       }
     }
@@ -268,7 +285,7 @@ export function renderSwapAnimation(
     ctx,
     coord1.tilex,
     coord1.tiley,
-    "#000000",
+    darkBgColor,
     level.tileWidth,
     level.tileHeight
   );
@@ -276,7 +293,7 @@ export function renderSwapAnimation(
     ctx,
     coord2.tilex,
     coord2.tiley,
-    "#000000",
+    darkBgColor,
     level.tileWidth,
     level.tileHeight
   );
@@ -362,7 +379,7 @@ export function renderMoves(
     const coord2 = getTileCoordinate(level, move.column2, move.row2, 0, 0);
 
     // Draw hint line
-    ctx.strokeStyle = "#ff0000";
+    ctx.strokeStyle = "#ffffff";
     ctx.beginPath();
     ctx.moveTo(
       coord1.tilex + level.tileWidth / 2,
@@ -375,7 +392,7 @@ export function renderMoves(
     ctx.stroke();
 
     // Draw circles at endpoints
-    ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#ffffff";
     ctx.beginPath();
     ctx.arc(
       coord1.tilex + level.tileWidth / 2,
