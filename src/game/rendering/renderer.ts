@@ -13,8 +13,123 @@ export function drawTile(
   tileWidth: number,
   tileHeight: number
 ): void {
-  ctx.fillStyle = color;
-  ctx.fillRect(x + 2, y + 2, tileWidth - 4, tileHeight - 4);
+  // Create rounded rectangle for the tile
+  const cornerRadius = 5;
+
+  // Create a lighter color for highlights
+  const lighterColor = adjustColor(color, 50);
+
+  // Main tile body with gradient
+  const gradient = ctx.createLinearGradient(
+    x + 2,
+    y + 2,
+    x + tileWidth - 4,
+    y + tileHeight - 4
+  );
+  gradient.addColorStop(0, lighterColor);
+  gradient.addColorStop(1, color);
+
+  ctx.fillStyle = gradient;
+
+  // Draw rounded rectangle
+  ctx.beginPath();
+  ctx.moveTo(x + 2 + cornerRadius, y + 2);
+  ctx.lineTo(x + tileWidth - 4 - cornerRadius, y + 2);
+  ctx.arcTo(
+    x + tileWidth - 4,
+    y + 2,
+    x + tileWidth - 4,
+    y + 2 + cornerRadius,
+    cornerRadius
+  );
+  ctx.lineTo(x + tileWidth - 4, y + tileHeight - 4 - cornerRadius);
+  ctx.arcTo(
+    x + tileWidth - 4,
+    y + tileHeight - 4,
+    x + tileWidth - 4 - cornerRadius,
+    y + tileHeight - 4,
+    cornerRadius
+  );
+  ctx.lineTo(x + 2 + cornerRadius, y + tileHeight - 4);
+  ctx.arcTo(
+    x + 2,
+    y + tileHeight - 4,
+    x + 2,
+    y + tileHeight - 4 - cornerRadius,
+    cornerRadius
+  );
+  ctx.lineTo(x + 2, y + 2 + cornerRadius);
+  ctx.arcTo(x + 2, y + 2, x + 2 + cornerRadius, y + 2, cornerRadius);
+  ctx.closePath();
+  ctx.fill();
+
+  // Top-left highlight (shiny border)
+  const highlightGradient = ctx.createLinearGradient(
+    x + 2,
+    y + 2,
+    x + tileWidth / 2,
+    y + tileHeight / 2
+  );
+  highlightGradient.addColorStop(0, "rgba(255, 255, 255, 0.7)");
+  highlightGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+  ctx.fillStyle = highlightGradient;
+  ctx.beginPath();
+  ctx.moveTo(x + 2 + cornerRadius, y + 2);
+  ctx.lineTo(x + tileWidth / 2, y + 2);
+  ctx.lineTo(x + 2, y + tileHeight / 2);
+  ctx.lineTo(x + 2, y + 2 + cornerRadius);
+  ctx.arcTo(x + 2, y + 2, x + 2 + cornerRadius, y + 2, cornerRadius);
+  ctx.closePath();
+  ctx.fill();
+
+  // Bottom-right shadow
+  const shadowGradient = ctx.createLinearGradient(
+    x + tileWidth / 2,
+    y + tileHeight / 2,
+    x + tileWidth - 4,
+    y + tileHeight - 4
+  );
+  shadowGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+  shadowGradient.addColorStop(1, "rgba(0, 0, 0, 0.3)");
+
+  ctx.fillStyle = shadowGradient;
+  ctx.beginPath();
+  ctx.moveTo(x + tileWidth - 4, y + tileHeight / 2);
+  ctx.lineTo(x + tileWidth - 4, y + tileHeight - 4 - cornerRadius);
+  ctx.arcTo(
+    x + tileWidth - 4,
+    y + tileHeight - 4,
+    x + tileWidth - 4 - cornerRadius,
+    y + tileHeight - 4,
+    cornerRadius
+  );
+  ctx.lineTo(x + tileWidth / 2, y + tileHeight - 4);
+  ctx.closePath();
+  ctx.fill();
+}
+
+/**
+ * Adjust a color by a certain amount
+ */
+function adjustColor(color: string, amount: number): string {
+  // Extract RGB components from hex color
+  let r = parseInt(color.substring(1, 3), 16);
+  let g = parseInt(color.substring(3, 5), 16);
+  let b = parseInt(color.substring(5, 7), 16);
+
+  // Adjust color
+  r = Math.max(0, Math.min(255, r + amount));
+  g = Math.max(0, Math.min(255, g + amount));
+  b = Math.max(0, Math.min(255, b + amount));
+
+  // Convert back to hex
+  return (
+    "#" +
+    r.toString(16).padStart(2, "0") +
+    g.toString(16).padStart(2, "0") +
+    b.toString(16).padStart(2, "0")
+  );
 }
 
 /**
@@ -38,7 +153,10 @@ export function renderTiles(
   );
 
   // Draw level background
-  ctx.fillStyle = "#000000";
+  const computedStyle = getComputedStyle(document.documentElement);
+
+  ctx.fillStyle =
+    computedStyle.getPropertyValue("--color-dark-bg").trim() || "#000000";
   ctx.fillRect(
     0,
     0,
