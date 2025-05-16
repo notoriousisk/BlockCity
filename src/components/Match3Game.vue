@@ -1,13 +1,10 @@
 <template>
   <div class="match3-game">
-    <div class="game-board">
-      <canvas
-        ref="gameCanvas"
-        :width="canvasWidth"
-        :height="canvasHeight"
-      ></canvas>
-      <div v-if="gameOver" class="game-board-overlay"></div>
-    </div>
+    <canvas
+      ref="gameCanvas"
+      :width="canvasWidth"
+      :height="canvasHeight"
+    ></canvas>
 
     <div v-if="isReshuffling" class="game-message reshuffling">
       Reshuffling...
@@ -286,12 +283,6 @@ onBeforeUnmount(() => {
   padding: 20px;
 }
 
-.game-board {
-  position: relative;
-  border: 2px solid #000;
-  background-color: #f0f0f0;
-}
-
 canvas {
   display: block;
 }
@@ -351,15 +342,5 @@ canvas {
 .game-over {
   background-color: rgba(0, 0, 0, 0.9);
   padding: 24px;
-}
-
-.game-board-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  pointer-events: none;
 }
 </style>
