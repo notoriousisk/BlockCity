@@ -78,7 +78,7 @@
 
             <div v-if="wallet" class="wallet-jetton-display">
               <div v-if="isJettonLoading" class="balance-loading">
-                Loading jettons...
+                Loading jettons..
               </div>
               <div v-else-if="hasJettonError" class="balance-error">
                 <AlertCircle :size="18" />
