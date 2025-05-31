@@ -118,11 +118,11 @@
 
           <button
             class="exchange-button"
-            :disabled="!isWalletConnected"
-            @click="burnJettonsForCoins"
+            :disabled="!isWalletConnected || isProcessing"
+            @click="handleBurnJettons"
           >
-            <RefreshCw :size="20" />
-            <span>Exchange</span>
+            <RefreshCw :size="20" :class="{ 'animate-spin': isProcessing }" />
+            <span>{{ isProcessing ? "Processing..." : "Exchange" }}</span>
           </button>
 
           <div class="circle-icon coin-circle">
@@ -146,11 +146,16 @@ import { useUserStore } from "@/stores/userStore";
 import { ASSET_COSTS } from "@/types";
 import { useTonWallet } from "@/tonconnect/useTonWallet";
 import { RefreshCw } from "lucide-vue-next";
+import { useJettonOperations } from "@/tonconnect/jettonOperations";
+import { openToast } from "@/stores/toastStore";
+import { addCoinsFromJettonBurn } from "@/firebase/firebaseService";
 
 const userStore = useUserStore();
-const { balance, energy } = storeToRefs(userStore);
-const { refillEnergyAction, purchaseAssetAction, burnJettonsForCoins } =
-  userStore;
+const { balance, energy, userDoc } = storeToRefs(userStore);
+const { refillEnergyAction, purchaseAssetAction } = userStore;
+
+// Add Jetton operations
+const { burnJettons, isProcessing } = useJettonOperations();
 
 // Wallet connection status
 const { wallet } = useTonWallet();
@@ -179,6 +184,73 @@ const handlePurchaseAsset = async (
 ) => {
   if (!canPurchaseAsset(assetType)) return;
   await purchaseAssetAction(assetType);
+};
+
+// Add the burn function
+const handleBurnJettons = async () => {
+  if (!isWalletConnected.value) {
+    openToast({
+      title: "Wallet Not Connected",
+      content: "Please connect your TON wallet first",
+      type: "error",
+    });
+    return;
+  }
+
+  if (!userDoc.value) {
+    openToast({
+      title: "User Not Found",
+      content: "Please try again later",
+      type: "error",
+    });
+    return;
+  }
+
+  try {
+    const JETTONS_TO_BURN = "1000";
+    const COINS_TO_RECEIVE = 1000;
+    const JETTON_ADDRESS = import.meta.env.VITE_TON_JETTON_ADDRESS;
+
+    const result = await burnJettons(JETTON_ADDRESS, JETTONS_TO_BURN);
+
+    if (!result) {
+      openToast({
+        title: "Transaction Failed",
+        content: "Failed to exchange jettons burn. Please try again.",
+        type: "error",
+      });
+      return;
+    }
+
+    // Add coins to user balance in Firebase
+    const success = await addCoinsFromJettonBurn(
+      userDoc.value.telegramId,
+      COINS_TO_RECEIVE
+    );
+
+    if (success) {
+      openToast({
+        title: "Conversion Successful",
+        content: `Exchanged ${JETTONS_TO_BURN} jettons for ${COINS_TO_RECEIVE} coins!`,
+        type: "success",
+      });
+    } else {
+      openToast({
+        title: "Conversion Error",
+        content: "Jettons were burned but failed to add coins to balance.",
+        type: "error",
+      });
+    }
+  } catch (error) {
+    console.error("Error in exchanging jettons for coins:", error);
+    openToast({
+      title: "Conversion Failed",
+      content: `Error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+      type: "error",
+    });
+  }
 };
 </script>
 

@@ -13,10 +13,8 @@ import {
   purchaseAsset,
   refillEnergy,
   activateBoost,
-  addCoinsFromJettonBurn,
 } from "@/firebase/firebaseService";
 import { useTonConnectUI } from "@/tonconnect/useTonConnectUI";
-import { burnJettons } from "@/tonconnect/jettonOperations";
 
 export interface DisplayDataRow {
   title: string;
@@ -285,74 +283,6 @@ export const useUserStore = defineStore("user", () => {
     return success;
   }
 
-  /**
-   * Burns 1000 jettons to receive 1000 coins
-   * 1. Verifies user has a connected wallet
-   * 2. Burns jettons on the TON blockchain
-   * 3. Updates user balance in Firebase
-   */
-  async function burnJettonsForCoins() {
-    if (!userDoc.value) {
-      openToast({
-        title: "Wallet Not Connected",
-        content: "Please connect your TON wallet first",
-        type: "error",
-      });
-      return false;
-    }
-
-    // Amount constants
-    const JETTONS_TO_BURN = "1000";
-    const COINS_TO_RECEIVE = 1000;
-    const JETTON_ADDRESS = import.meta.env.VITE_TON_JETTON_ADDRESS;
-
-    try {
-      // 1. Perform the blockchain transaction to burn jettons
-      const result = await burnJettons(JETTON_ADDRESS, JETTONS_TO_BURN);
-
-      if (!result) {
-        openToast({
-          title: "Transaction Failed",
-          content: "Failed to exchange jettons burn. Please try again.",
-          type: "error",
-        });
-        return false;
-      }
-
-      // 2. Add coins to user balance in Firebase
-      const success = await addCoinsFromJettonBurn(
-        userDoc.value.telegramId,
-        COINS_TO_RECEIVE
-      );
-
-      if (success) {
-        openToast({
-          title: "Conversion Successful",
-          content: `Exchanged ${JETTONS_TO_BURN} jettons for ${COINS_TO_RECEIVE} coins!`,
-          type: "success",
-        });
-      } else {
-        openToast({
-          title: "Conversion Error",
-          content: "Jettons were burned but failed to add coins to balance.",
-          type: "error",
-        });
-      }
-
-      return success;
-    } catch (error) {
-      console.error("Error in exchanging jettons for coins:", error);
-      openToast({
-        title: "Conversion Failed",
-        content: `Error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
-        type: "error",
-      });
-      return false;
-    }
-  }
-
   // Clean up on unmount
   onUnmounted(() => {
     if (unsub.value) {
@@ -371,6 +301,7 @@ export const useUserStore = defineStore("user", () => {
     numberOfRefs,
     referralMultiplier,
     walletAddress,
+    userDoc,
     // Computed
     user,
     userRows,
@@ -390,6 +321,5 @@ export const useUserStore = defineStore("user", () => {
     activateBoostAction,
     startEnergyRefreshInterval,
     stopEnergyRefreshInterval,
-    burnJettonsForCoins,
   };
 });
