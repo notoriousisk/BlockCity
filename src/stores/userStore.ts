@@ -292,7 +292,7 @@ export const useUserStore = defineStore("user", () => {
    * 3. Updates user balance in Firebase
    */
   async function burnJettonsForCoins() {
-    if (!userDoc.value || !walletAddress.value) {
+    if (!userDoc.value) {
       openToast({
         title: "Wallet Not Connected",
         content: "Please connect your TON wallet first",
