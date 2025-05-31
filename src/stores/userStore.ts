@@ -16,7 +16,7 @@ import {
   addCoinsFromJettonBurn,
 } from "@/firebase/firebaseService";
 import { useTonConnectUI } from "@/tonconnect/useTonConnectUI";
-import { burnJettons } from "@/tonconnect/tonService";
+import { burnJettons } from "@/tonconnect/jettonOperations";
 
 export interface DisplayDataRow {
   title: string;
@@ -302,14 +302,15 @@ export const useUserStore = defineStore("user", () => {
     }
 
     // Amount constants
-    const JETTONS_TO_BURN = 1000;
+    const JETTONS_TO_BURN = "1000";
     const COINS_TO_RECEIVE = 1000;
+    const JETTON_ADDRESS = import.meta.env.VITE_TON_JETTON_ADDRESS;
 
     try {
       // 1. Perform the blockchain transaction to burn jettons
-      const txHash = await burnJettons(walletAddress.value, JETTONS_TO_BURN);
+      const result = await burnJettons(JETTON_ADDRESS, JETTONS_TO_BURN);
 
-      if (!txHash) {
+      if (!result) {
         openToast({
           title: "Transaction Failed",
           content: "Failed to exchange jettons burn. Please try again.",
