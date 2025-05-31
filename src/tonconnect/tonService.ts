@@ -197,6 +197,7 @@ export async function burnJettons(
     // 5. Create a burn transaction
     const burnParams = {
       tokenAmount: new TonWeb.utils.BN(amountToburn),
+      jettonAmount: new TonWeb.utils.BN(amountToburn),
       responseAddress: new TonWebAddress(walletAddress),
     };
     console.log("burnParams", burnParams);

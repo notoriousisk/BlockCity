@@ -64,6 +64,7 @@ export const useJettonOperations = () => {
       // Create burn transaction
       const burnParams = {
         tokenAmount: new TonWeb.utils.BN(amountToBurn),
+        jettonAmount: new TonWeb.utils.BN(amountToBurn),
         responseAddress: new TonWebAddress(wallet.value.account.address),
       };
 
@@ -143,6 +144,7 @@ export const useJettonOperations = () => {
       // Create transfer transaction
       const transferParams = {
         tokenAmount: new TonWeb.utils.BN(amountToTransfer),
+        jettonAmount: new TonWeb.utils.BN(amountToTransfer),
         toAddress: new TonWebAddress(destinationAddress),
         responseAddress: new TonWebAddress(wallet.value.account.address),
         forwardAmount: new TonWeb.utils.BN(0),
